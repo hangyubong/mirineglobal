@@ -23,6 +23,7 @@ for market, code in marketType.items():     #위의 딕셔너리 값을 반복�
                 volume = contents.select_one("td:nth-child(7)").text    #거래량을 불러올 구문 작성.
                 print(f"{market}-{rank}위 종목: {name} / 현재가: {price}원 / 거래량: {volume}") #f-string으로 시장구분과 반복객체를 포매팅하여 출력
 
-            except AttributeError:
-                continue
+            except AttributeError as e:
+                #continue
+                print(e) #에러발생시에는 에러명 출력.
 print("-Crawling Over.-")
