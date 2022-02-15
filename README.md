@@ -23,14 +23,14 @@ ___
 
 ---
 
-![데이터출력값](https://user-images.githubusercontent.com/97740702/154047636-48ce3782-cc3c-49d3-ae41-e01c22fe1e66.jpg width="800" height="150")
+![데이터출력값](https://user-images.githubusercontent.com/97740702/154047636-48ce3782-cc3c-49d3-ae41-e01c22fe1e66.jpg)
 
 ----
 ### 2. Plot차트
 
 ---
 
-![데이터출력값](https://user-images.githubusercontent.com/97740702/154047685-30822684-17a5-40ec-8fa1-c5957cc3b325.jpg width="800" height="250")
+![데이터출력값](https://user-images.githubusercontent.com/97740702/154047685-30822684-17a5-40ec-8fa1-c5957cc3b325.jpg)
 
 
 ---
