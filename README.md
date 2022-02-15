@@ -22,15 +22,10 @@ ___
 ### 1. 출력데이터
 
 ---
-
 ![데이터출력값](https://user-images.githubusercontent.com/97740702/154047636-48ce3782-cc3c-49d3-ae41-e01c22fe1e66.jpg)
-
 ----
 ### 2. Plot차트
 
 ---
-
-![데이터출력값](https://user-images.githubusercontent.com/97740702/154047685-30822684-17a5-40ec-8fa1-c5957cc3b325.jpg)
-
-
+![그래프](https://user-images.githubusercontent.com/97740702/154048210-4228d177-6337-45fa-a8ff-0761b6e79ce2.jpg)
 ---
