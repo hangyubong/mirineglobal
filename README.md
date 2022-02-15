@@ -27,5 +27,6 @@ ___
 ### 2. Plot차트
 
 ---
-![그래프](https://user-images.githubusercontent.com/97740702/154048210-4228d177-6337-45fa-a8ff-0761b6e79ce2.jpg)
+![그래프](https://user-images.githubusercontent.com/97740702/154133924-6254a373-b6de-430c-a65e-07b72efc1c25.jpg)
+
 ---
