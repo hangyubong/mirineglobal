@@ -23,12 +23,16 @@ ___
 
 ---
 
-<img src="../../Desktop/데이터출력값.jpg" width="800" height="150"/>
+![데이터출력값](https://user-images.githubusercontent.com/97740702/154047636-48ce3782-cc3c-49d3-ae41-e01c22fe1e66.jpg)
+![그래프](https://user-images.githubusercontent.com/97740702/154047644-c111d30d-cba0-4f8c-8215-35e6ef11a8cd.jpg)
+
 
 ----
 ### 2. Plot차트
 
 ---
-<img src="../../Desktop/그래프.jpg" width="800" height="250"/>
+![그래프](https://user-images.githubusercontent.com/97740702/154047675-448d3c81-3384-4a90-ab8a-363bfa03cf7e.jpg)
+![데이터출력값](https://user-images.githubusercontent.com/97740702/154047685-30822684-17a5-40ec-8fa1-c5957cc3b325.jpg)
+
 
 ---
