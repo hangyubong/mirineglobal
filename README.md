@@ -26,7 +26,7 @@ ___
 
 #### 2.취득개시일자 입력(날짜지정)
 
-<img src="../../Desktop/입력(날짜지정).jpg" width="300" height="70"/>
+<img src="입력(날짜지정).jpg" width="300" height="70"/>
 
 
 
@@ -35,12 +35,12 @@ ___
 
 ---
 
-<img src="../../Desktop/데이터출력값.jpg" width="800" height="150"/>
+<img src="데이터출력값.jpg" width="800" height="150"/>
 
 ----
 #### 2. Plot차트
 
 ---
-<img src="../../Desktop/그래프.jpg" width="800" height="250"/>
+<img src="그래프.jpg" width="800" height="250"/>
 
 ---
