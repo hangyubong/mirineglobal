@@ -41,7 +41,7 @@ ___
 #### 2. Plot차트
 
 ---
-<img src="https://user-images.githubusercontent.com/97740702/154225952-f6025795-eee1-4090-9c1f-96e1512d42d9.jpg width="800" height="250"/>
+<img src="https://user-images.githubusercontent.com/97740702/154225952-f6025795-eee1-4090-9c1f-96e1512d42d9.jpg" width="800" height="250"/>
 
 
 ---
