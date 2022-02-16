@@ -35,12 +35,13 @@ ___
 
 ---
 
-<img src="데이터출력값.jpg" width="800" height="150"/>
+<img src="데이터출력값.jpg" width="600" height="150"/>
 
 ----
 #### 2. Plot차트
 
 ---
-<img src="plot그래프.jpg" width="800" height="250"/>
+![plot그래프](https://user-images.githubusercontent.com/97740702/154225393-b5260558-4054-4071-833f-2f42c5af7982.jpg)
+
 
 ---
