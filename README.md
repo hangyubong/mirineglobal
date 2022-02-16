@@ -41,6 +41,6 @@ ___
 #### 2. Plot차트
 
 ---
-<img src="그래프.jpg" width="800" height="250"/>
+<img src="plot그래프.jpg" width="800" height="250"/>
 
 ---
