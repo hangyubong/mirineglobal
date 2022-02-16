@@ -35,7 +35,7 @@ ___
 
 ---
 
-<img src="데이터출력값.jpg" width="800" height="150"/>
+<img src="데이터출력값.jpg" width="500" height="200"/>
 
 ----
 #### 2. Plot차트
