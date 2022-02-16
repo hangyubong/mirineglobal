@@ -22,11 +22,11 @@ ___
 ### 실행방법(이미지)
 #### 1.종목명 입력
 
-<img src="입력(종목명).jpg" width="200" height="50"/>
+<img src="../../Desktop/입력(종목명).jpg" width="200" height="50"/>
 
 #### 2.취득개시일자 입력(날짜지정)
 
-<img src="입력(날짜지정).jpg" width="300" height="70"/>
+<img src="../../Desktop/입력(날짜지정).jpg" width="300" height="70"/>
 
 <br>
 
@@ -35,14 +35,12 @@ ___
 
 ---
 
-<img src="데이터출력값.jpg" width="600" height="150"/>
+<img src="../../Desktop/데이터출력값.jpg" width="800" height="150"/>
 
 ----
 #### 2. Plot차트
 
 ---
-
-<img src="plot그래프.jpg" width="600" height="150"/>
-
+<img src="../../Desktop/plot그래프.jpg" width="800" height="250"/>
 
 ---
