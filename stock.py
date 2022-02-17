@@ -5,6 +5,7 @@ import traceback
 import datetime
 import csv
 import matplotlib.pyplot as plt
+import logging
 
 # 함수정리1. 한국거래소 상장법인목록에서 전체 데이터를 받아 필요한 정보를 추출.
 def get_krx_code():
@@ -35,13 +36,15 @@ def get_krx_code():
         traceback.print_exc()
 
 
-# 종목명 입력
-item_name = '카카오'
-stock = get_krx_code().query("company=='{}'".format(item_name))['code'].to_string(index=False) # item_name 종목 코드를 가지고옴
+# 종목명, 날짜입력 실행 --예시) 카카오, 19991.11.11
+item_name = input(':')
+str_datefrom = input(':')
+
+stock = get_krx_code().query("company=='{}'".format(item_name))['code'].to_string(index=False) # item_name 종목명의 따른 종목코드 매칭
 print('\n' + item_name + " 종목의 코드: "+ stock + '\n') # 종목코드 확인
 
 # 함수정리2. 종목명에 따른 정보(일자별 시세 데이터) 추출.
-def get_stock_price(code):
+def get_stock_price(code, str_datefrom):
     try:
         df = pd.DataFrame()
         url = f"http://finance.naver.com/item/sise_day.nhn?code={code}"
@@ -57,10 +60,6 @@ def get_stock_price(code):
             req = requests.get(f'{url}&page={page}', headers=header)
             df = pd.concat([df, pd.read_html(req.text)[0]])
 
-            # 지정일자로부터 최근날짜까지 가지고 온다
-            str_datefrom = datetime.datetime.strftime(datetime.datetime(year=1999, month=11, day=11), '%Y.%m.%d')
-            df = df[df['날짜'] > str_datefrom]
-
         # 영문컬럼명으로 변경 및 필요없는 컬럼명 제거
         df = df.rename(columns={'날짜': 'date', '종가': 'close', '전일비': 'diff'
             , '시가': 'open', '고가': 'high', '저가': 'low', '거래량': 'volume'})  # 영문으로 컬럼명 변경
@@ -72,6 +71,10 @@ def get_stock_price(code):
         df.drop(columns=['diff', 'open', 'high', 'low'], inplace=True)  # 필요없는 컬럼 제거
         df = df.sort_values(by='date')  # 날짜순으로 정렬
 
+        # 날짜 출력기간 범위설정 (지정날짜로부터 현재시점까지 불러오도록 함)
+        startDate = datetime.datetime.strptime((str_datefrom), '%Y.%m.%d')
+        df = df[df['date'] > startDate]
+
         df = df.reset_index(drop=True)
 
         return df
@@ -79,7 +82,7 @@ def get_stock_price(code):
     except Exception as e:
         traceback.print_exc()
 
-df = get_stock_price(stock) #코드명에 따른 데이터출력 함수
+df = get_stock_price(stock, str_datefrom) #코드명에 따른 데이터출력 함수
 # print(df) #item_name의 종가,거래량 데이터확인
 
 """csv파일 생성 / 읽어오기"""
@@ -90,9 +93,10 @@ print('\n' + item_name + '.csv 파일저장 완료' + '\n')
 
 """plot라이브러리 그래프 나타내기"""
 fig = plt.figure(figsize=(11,8)) #출력창 사이즈 설정
+
 plt.rc('font', family='Malgun Gothic') #한글 표시되도록 글꼴설정
 top_axes = plt.subplot2grid((4,4), (0,0), rowspan=3, colspan=4) #상단그래프 위치 설정
-top_axes.set_title(item_name + "종목의 종가와 거래량 분석", fontsize=22) #제목 설정
+top_axes.set_title(item_name + " 種目の終値とVolume分析", fontsize=22) #제목 설정
 
 bottom_axes = plt.subplot2grid((4,4), (3,0), rowspan=1, colspan=4) #하단그래프 위치 설정
 bottom_axes.set_xlabel('Date', fontsize=15)# X축 라벨 지정
