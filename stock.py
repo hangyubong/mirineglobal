@@ -34,6 +34,12 @@ def get_krx_code():
     except Exception as e:
         traceback.print_exc()
 
+
+# 종목명 입력
+item_name = '카카오'
+stock = get_krx_code().query("company=='{}'".format(item_name))['code'].to_string(index=False) # item_name 종목 코드를 가지고옴
+print('\n' + item_name + " 종목의 코드: "+ stock + '\n') # 종목코드 확인
+
 # 함수정리2. 종목명에 따른 정보(일자별 시세 데이터) 추출.
 def get_stock_price(code):
     try:
@@ -72,11 +78,6 @@ def get_stock_price(code):
 
     except Exception as e:
         traceback.print_exc()
-
-# 종목명 입력
-item_name = '카카오'
-stock = get_krx_code().query("company=='{}'".format(item_name))['code'].to_string(index=False) # item_name 종목 코드를 가지고옴
-print('\n' + item_name + " 종목의 코드: "+ stock + '\n') # 종목코드 확인
 
 df = get_stock_price(stock) #코드명에 따른 데이터출력 함수
 # print(df) #item_name의 종가,거래량 데이터확인
