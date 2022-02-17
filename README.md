@@ -20,13 +20,9 @@ ___
 <br>
 
 ### 実行方法(イメージ)
-#### 1.種目名入力
+#### 種目名, 取得開始日時入力(日付指定)
 
-<img src="입력(종목명).jpg" width="200" height="50"/>
-
-#### 2.取得開始日時入力(日付指定)
-
-<img src="입력(날짜지정).jpg" width="300" height="70"/>
+<img src="실행(입력예).jpg" width="200" height="50"/>
 
 <br>
 
@@ -41,7 +37,7 @@ ___
 #### 2. Plotチャート
 
 ---
-<img src="https://user-images.githubusercontent.com/97740702/154225952-f6025795-eee1-4090-9c1f-96e1512d42d9.jpg" width="800" height="250"/>
+<img src="plot그래프(일본어).jpg" width="800" height="250"/>
 
 
 ---
