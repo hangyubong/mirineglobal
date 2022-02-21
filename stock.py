@@ -4,8 +4,11 @@ import requests
 import traceback
 import datetime
 import csv
+import sys
 import matplotlib.pyplot as plt
 import logging
+
+
 
 # 関数定理1. 韓国取引所上場法人目録から全データを受け、必要な情報を抽出。
 def get_krx_code():
@@ -83,7 +86,7 @@ def get_stock_price(code, str_datefrom):
         traceback.print_exc()
 
 df = get_stock_price(stock, str_datefrom) # コード名によるデータ出力関数
-# print(df) #item_nameの終値、ボリュームデータ確認
+print(df) #item_nameの終値、ボリュームデータ確認
 
 """csvファイル作成/読み込み"""
 df.to_csv(f'{item_name}.csv', encoding='utf-8-sig') # (item_name終値、ボリュームデータcsvファイル作成(保存)
@@ -105,3 +108,20 @@ top_axes.plot(df['date'], df['close']) # (上段)終値出力値のグラフ
 bottom_axes.bar(df['date'], df['volume']) # (下段)ボリューム出力値のグラフ
 
 plt.show()
+
+if __name__ == '__main__':
+    mylogger = logging.getLogger("my") # 特定ロガーで生成
+    mylogger.setLevel(logging.INFO) # INFOレベル以上は出力
+
+    # 確認したい情報をフォーマットして出力
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s') # asctime時間, nameロガー名, levelnameロギングレベル, messageメッセージ
+
+    # stream_hander = logging.StreamHandler() # コンソール出力
+    # stream_hander.setFormatter(formatter)
+    # mylogger.addHandler(stream_hander)
+
+    file_handler = logging.FileHandler('stock.log') # ファイルに出力
+    file_handler.setFormatter(formatter) # フォーマット適用
+    mylogger.addHandler(file_handler)
+
+    mylogger.info("server start!!!")
