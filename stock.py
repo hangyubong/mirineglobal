@@ -128,7 +128,7 @@ if __name__ == '__main__':
     mylogger.info("server start!!!")
 
     if len(sys.argv) == 1:
-        print("정보를 입력받지 못했습니다.")
+        print("情報を入力されていません。")
         # exit(1)
 
     args = sys.argv
