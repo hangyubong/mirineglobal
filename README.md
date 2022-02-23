@@ -22,7 +22,7 @@ ___
 ### 実行方法(イメージ)
 #### 種目名, 取得開始日時入力(日付指定)
 
-<img src="../../Desktop/실행(입력).jpg" width="300" height="50"/>
+<img src="실행(입력).jpg" width="300" height="50"/>
 
 <br>
 
@@ -31,12 +31,12 @@ ___
 
 ---
 
-<img src="../../Desktop/데이터출력값.jpg" width="500" height="200"/>
+<img src="데이터출력값.jpg" width="500" height="200"/>
 
 ----
 #### 2. Plotチャート   
 
 ---
-<img src="../../Desktop/plot그래프(일본어).jpg" width="800" height="250"/>
+<img src="/plot그래프(일본어).jpg" width="800" height="250"/>
 
 ---
