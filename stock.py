@@ -5,8 +5,10 @@ import traceback
 import datetime
 import csv
 import sys
-import matplotlib.pyplot as plt
 import logging
+import matplotlib.pyplot as plt
+from matplotlib import ticker
+from mplfinance.original_flavor import candlestick2_ohlc
 
 # 関数定理1. 韓国取引所上場法人目録から全データを受け、必要な情報を抽出。
 def get_krx_code():
@@ -35,7 +37,7 @@ def get_krx_code():
         return stock_code
 
     except Exception as e:
-        mylogger.info('\033[31m' + "Check the 'error.log' file!!")
+        mylogger.info('\033[31m' + " Check the 'error.log' file!!")
         logging.error(traceback.format_exc())
 
 # 関数定理2. 種目名に応じた情報（日付別の相場データ）抽出
@@ -63,7 +65,7 @@ def get_stock_price(code, str_datefrom):
         df[['close', 'diff', 'open', 'high', 'low', 'volume']] = \
             df[['close', 'diff', 'open', 'high', 'low', 'volume']].astype(int)  # int形に変更。 出力数値小数点(.0)除去
         df = df[['date', 'open', 'high', 'low', 'close', 'diff', 'volume']]  # カラム順序整列
-        df.drop(columns=['diff', 'open', 'high', 'low'], inplace=True)  # 不要なカラムの除去, 変更されたデータフレームを適用
+        df.drop(columns=['diff', 'open', 'high', 'low'], inplace=False)  # 不要なカラムの除去, inplace=False = 元データ / inplace=False = 変更されたデータフレームを適用
         # print(df.columns)
         df = df.sort_values(by='date')  # 日付順にソート
 
@@ -76,7 +78,7 @@ def get_stock_price(code, str_datefrom):
         return df
 
     except Exception as e:
-        mylogger.info('\033[31m' + "Check the 'error.log' file!!")
+        mylogger.info('\033[31m' + " Check the 'error.log' file!!")
         logging.error(traceback.format_exc())
 
 if __name__ == '__main__':
@@ -135,17 +137,43 @@ if __name__ == '__main__':
         mylogger.info("Success! save company price file : " + item_name + ".csv")
 
         # プロットライブラリグラフ表示 --
-        fig = plt.figure(figsize=(11, 8))  # 出力ウィンドウのサイズ設定
+        fig, ax = plt.subplots(figsize=(18, 9.5))  # 出力ウィンドウのサイズ設定
         plt.rc('font', family='Malgun Gothic')  # ハングル表示されるようにフォント設定
-        top_axes = plt.subplot2grid((4, 4), (0, 0), rowspan=3, colspan=4)  # 上段グラフ位置設定
-        top_axes.set_title(item_name + " 種目の終値とVolume分析", fontsize=22)  # タイトル設定
-        bottom_axes = plt.subplot2grid((4, 4), (3, 0), rowspan=1, colspan=4)  # 下段グラフ位置設定
-        bottom_axes.set_xlabel('Date', fontsize=15)  # X軸ラベル指定
-        top_axes.plot(df['date'], df['close'])  # (上段)終値出力値のグラフ
-        bottom_axes.bar(df['date'], df['volume'])  # (下段)ボリューム出力値のグラフ
+        # top, bottom position setting
+        top_axes = plt.subplot2grid((4, 4), (0, 0), rowspan=3, colspan=4)
+        bottom_axes = plt.subplot2grid((4, 4), (3, 0), rowspan=1, colspan=4, sharex=top_axes)
+        bottom_axes.get_yaxis().get_major_formatter().set_scientific(False)
+        # x-軸の日付
+        xdate = df.date.astype('str')
+        # Close - Moving Everage
+        top_axes.plot(xdate,df['close'], label="Close",linewidth=0.7,color='k')
+        top_axes.plot(xdate,df['close'].rolling(window=5).mean(), label="MA5",linewidth=0.7)
+        top_axes.plot(xdate,df['close'].rolling(window=20).mean(), label="MA20",linewidth=0.7)
+        top_axes.plot(xdate,df['close'].rolling(window=60).mean(), label="MA60",linewidth=0.7)
+        top_axes.plot(xdate,df['close'].rolling(window=120).mean(), label="MA120",linewidth=0.7)
+        # キャンドルデータ
+        candlestick2_ohlc(top_axes,df['open'],df['high'],df['low'],df['close'], width=0.5, colorup='r', colordown='b')
+        # bottom volume var setting
+        color_fuc = lambda x: 'r' if x >= 0 else 'b'
+        color_list = list(df['volume'].diff().fillna(0).apply(color_fuc))
+        bottom_axes.bar(xdate, df['volume'], width=0.5,align='center',color=color_list)
+        # チャートオプション
+        fig.suptitle(item_name, fontsize=25) # Title
+        bottom_axes.set_xlabel("Date", fontsize=15) # set_xlabel
+        top_axes.set_ylabel("Stock price(KRW)", fontsize=15) # set_ylabel
+        # x-軸 setting
+        top_axes.xaxis.set_major_locator(ticker.MaxNLocator(15)) # x-軸に見えるticker個数
+        top_axes.legend(loc=1) # legend位置
+        plt.xticks(rotation = 45) # x-軸文字 45度回転
+        # ax.xaxis.set_major_locator(ticker.MaxNLocator(25)) # x-軸に見えるticker個数
+        # ax.legend(loc=1) # legend位置
+        # plt.xticks(rotation = 45) # x-軸文字 45度回転
+
+        top_axes.legend()
+        plt.tight_layout()
+        plt.grid()
         plt.show()
-        mylogger.info("Success! Plot graph.")
 
     except Exception as e:
-        mylogger.info('\033[31m' + "Check the 'error.log' file!!")
+        mylogger.info('\033[31m' + " Check the 'error.log' file!!")
         logging.error(traceback.format_exc())
