@@ -24,7 +24,7 @@ def get_krx_code():
         # <会社名、種目コードリストcsvファイルで保存>
         stock_code = stock_code.sort_values(by='code')
         krxList = stock_code[['code', 'company']]
-        filename = 'company.csv'
+        filename = './output/company.csv'
         # write CSV
         with open(file=filename, mode='w', encoding='utf-8-sig', newline='') as f:
             csv_f = csv.writer(f)
@@ -84,6 +84,8 @@ def get_stock_price(code, str_datefrom):
 if __name__ == '__main__':
     try:
         # logging --
+        file = "./output/stock.log" # infolevelのlogfileディレクトリアドレス
+        error = "./output/error.log" # errorlevelのlogfileディレクトリアドレス
         mylogger = logging.getLogger("my")  # 特定ロガーで生成
         mylogger.setLevel(logging.INFO)  # INFOレベル以上は出力
 
@@ -95,14 +97,14 @@ if __name__ == '__main__':
         stream_hander = logging.StreamHandler() # コンソール出力
         stream_hander.setFormatter(consolelog)
         mylogger.addHandler(stream_hander)
-        file_handler = logging.FileHandler('stock.log')  # ファイルに出力
+        file_handler = logging.FileHandler(file)  # ファイルに出力
         file_handler.setFormatter(filelog)  # フォーマット適用
         mylogger.addHandler(file_handler)
 
         # ERRORレベル以上のログを`error.log`に出力するハンドラsetting
         logger = logging.getLogger()  # 特定ロガーで生成
         errorlog = logging.Formatter('%(asctime)s - %(name)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s', '%Y-%m-%d %H:%M:%S')
-        file_error_handler = logging.FileHandler('error.log')
+        file_error_handler = logging.FileHandler(error)
         file_error_handler.setLevel(logging.ERROR)
         file_error_handler.setFormatter(errorlog)
         logger.addHandler(file_error_handler)
@@ -130,13 +132,15 @@ if __name__ == '__main__':
         # print(df)
 
         # csvファイル作成/読み込み --
-        df.to_csv(f'{item_name}.csv', encoding='utf-8-sig')  # (item_name終値、ボリュームデータcsvファイル作成(保存) /,index=Falseを使うと、ファイル保存時に自動追加される索引(index)なし
-        csvDf = pd.read_csv(f'{item_name}.csv', encoding='utf-8-sig', index_col = 0)  # csvファイルの読み込み / index_col = 0 : 第一カラムをindexとして使用するように指定
+        datafile = "./output/" + f'{item_name}' + ".csv" # item_nameのcsvfileディレクトリアドレス
+        df.to_csv(datafile, encoding='utf-8-sig')  # (item_name終値、ボリュームデータcsvファイル作成(保存) /,index=Falseを使うと、ファイル保存時に自動追加される索引(index)なし
+        csvDf = pd.read_csv(datafile, encoding='utf-8-sig', index_col = 0)  # csvファイルの読み込み / index_col = 0 : 第一カラムをindexとして使用するように指定
         # csvDf.drop(['Unnamed: 0'], axis=1, inplace=True) # 上のindex_col = 0の代わりにこのコードも使える / Unnamed: 0カラムをdropして除去
         print(csvDf)  # csvファイルデータ確認
         mylogger.info("Success! save company price file : " + item_name + ".csv")
 
         # プロットライブラリグラフ表示 --
+        savefig = "./output/stock.jpg" # グラフのイメージを保存するディレクトリアドレス
         fig, ax = plt.subplots(figsize=(18, 9.5))  # 出力ウィンドウのサイズ設定
         plt.rc('font', family='Malgun Gothic')  # ハングル表示されるようにフォント設定
         # top, bottom position setting
@@ -160,7 +164,7 @@ if __name__ == '__main__':
         # チャートオプション
         fig.suptitle(item_name, fontsize=25) # Title
         bottom_axes.set_xlabel("Date", fontsize=15) # set_xlabel
-        top_axes.set_ylabel("Stock price(KRW)", fontsize=15) # set_ylabel
+        top_axes.set_ylabel("Stock Price(KRW)", fontsize=15) # set_ylabel
         # x-軸 setting
         top_axes.xaxis.set_major_locator(ticker.MaxNLocator(15)) # x-軸に見えるticker個数
         top_axes.legend(loc=1) # legend位置
@@ -172,6 +176,7 @@ if __name__ == '__main__':
         top_axes.legend()
         plt.tight_layout()
         plt.grid()
+        plt.savefig(savefig)
         plt.show()
 
     except Exception as e:
