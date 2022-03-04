@@ -10,7 +10,10 @@ import matplotlib.pyplot as plt
 from matplotlib import ticker
 from mplfinance.original_flavor import candlestick2_ohlc
 
-# 関数定理1. 韓国取引所上場法人目録から全データを受け、必要な情報を抽出。
+## 関数定理1 : 韓国取引所上場法人目録から全データを受け、必要な情報を抽出。
+## - 1. 上場法人の目録がダウンロードできるURLを要請する
+## - 2. 上場法人の目録から必要とするデータを読み込んでくる
+## - 3. 読み込んできたデータから全会社のコード分類リストをcsvfileに保存させる
 def get_krx_code():
     try:
         url = 'http://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13{0}' # 韓国取引所上場法人目録ダウンロード
@@ -40,7 +43,9 @@ def get_krx_code():
         mylogger.info('\033[31m' + " Check the 'error.log' file!!")
         logging.error(traceback.format_exc())
 
-# 関数定理2. 種目名に応じた情報（日付別の相場データ）抽出
+## 関数定理2 : 種目名に応じた情報（日付別の株価データ）抽出
+## - 1. crawringするURLを要請する
+## - 2. ユーザー情報を入れてBeautifulSoupのライブラリイでcrwaring出力
 def get_stock_price(code, str_datefrom):
     try:
         df = pd.DataFrame()
