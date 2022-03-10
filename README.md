@@ -6,6 +6,12 @@ ___
 >2.クロリングしたデータをcsvファイルとして保存し、出力する。<br>
 &nbsp;&nbsp;&nbsp;-出力データ(日付、終値、ボリューム)<br>
 &nbsp;&nbsp;&nbsp;-Plotを利用したグラフの出力
+>
+> 3.ドッカーを利用して実装する。<br>
+&nbsp;&nbsp;&nbsp;-Dockerfile, docker-compose.yml作成<br>
+&nbsp;&nbsp;&nbsp;-ドッカーイメージを生成<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ドッカーコンポーズプロンプトでビルドアップする)<br>
+&nbsp;&nbsp;&nbsp;-コンテナ内で実装する
 <br>
 
 
@@ -22,7 +28,7 @@ ___
 ### 実行方法(イメージ)
 #### 種目名, 取得開始日時入力(日付指定)
 
-<img src="picture/실행(입력-1).jpg" width="350" height="30"/>
+<img src="../../Desktop/실행(입력-1).jpg" width="350" height="30"/>
 
 <br>
 
@@ -31,12 +37,12 @@ ___
 
 ---
 
-<img src="picture/데이터출력값1.jpg" width="500" height="200"/>
+<img src="../../Desktop/데이터출력값1.jpg" width="500" height="200"/>
 
 ----
 #### 2. Plotチャート   
 
 ---
-<img src="picture/plot그래프(candle).jpg" width="800" height="250"/>
+<img src="../../Desktop/plot그래프(candle).jpg" width="800" height="250"/>
 
 ---

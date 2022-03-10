@@ -148,6 +148,7 @@ if __name__ == '__main__':
         savefig = "./output/stock.jpg" # グラフのイメージを保存するディレクトリアドレス
         fig, ax = plt.subplots(figsize=(18, 9.5))  # 出力ウィンドウのサイズ設定
         plt.rc('font', family='Malgun Gothic')  # ハングル表示されるようにフォント設定
+        plt.rcParams["font.family"] = "NanumGothic"
         # top, bottom position setting
         top_axes = plt.subplot2grid((4, 4), (0, 0), rowspan=3, colspan=4)
         bottom_axes = plt.subplot2grid((4, 4), (3, 0), rowspan=1, colspan=4, sharex=top_axes)
