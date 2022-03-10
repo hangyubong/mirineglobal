@@ -28,7 +28,7 @@ ___
 ### ※実行方法(イメージ)
 ####  &nbsp;&nbsp;&nbsp;- 種目名, 取得開始日時入力(日付指定)
 
-<img src="./piture/실행(입력-1).jpg" width="350" height="30"/>
+<img src="./picture/실행(입력-1).jpg" width="350" height="30"/>
 
 <br>
 
