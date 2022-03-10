@@ -37,13 +37,13 @@ ___
 
 ---
 
-<img src="../../Desktop/데이터출력값1.jpg" width="500" height="200"/>
+<img src="./picture/데이터출력값1.jpg" width="500" height="200"/>
 
 ----
 #### 2. Plotチャート   
 
 ---
-<img src="../../Desktop/plot그래프(candle).jpg" width="800" height="250"/>
+<img src=./picture/plot그래프(candle).jpg" width="800" height="250"/>
 
 ---
 
@@ -52,7 +52,7 @@ ___
 
 ---
 
-<img src="../../Desktop/미리네글로벌/과제업로드이미지파일/dockerimages0.jpg" width="800" height="80"/>
+<img src="./picture/dockerimages0.jpg" width="800" height="80"/>
 
 ---
 
@@ -60,7 +60,7 @@ ___
 
 ___
 
-<img src="../../Desktop/미리네글로벌/과제업로드이미지파일/dockerps0.jpg" width="800" height="60"/>
+<img src="./picture/dockerps0.jpg" width="800" height="60"/>
 
 ___
 
@@ -68,6 +68,6 @@ ___
 
 ---
 
-<img src="../../Desktop/미리네글로벌/과제업로드이미지파일/컨테이너에서실행(결과)_0.jpg" width="800" height="300"/>
+<img src=./picture/컨테이너에서실행(결과)_0.jpg" width="800" height="300"/>
 
 ---
