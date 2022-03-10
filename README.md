@@ -43,7 +43,7 @@ ___
 #### 2. Plotチャート   
 
 ---
-<img src=./picture/plot그래프(candle).jpg" width="800" height="250"/>
+<img src="./picture/plot그래프(candle).jpg" width="800" height="250"/>
 
 ---
 
@@ -68,6 +68,6 @@ ___
 
 ---
 
-<img src=./picture/컨테이너에서실행(결과)_0.jpg" width="800" height="300"/>
+<img src="./picture/컨테이너에서실행(결과)_0.jpg" width="800" height="300"/>
 
 ---
