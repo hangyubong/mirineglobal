@@ -15,6 +15,9 @@ RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 
 COPY stock.py /app/
+COPY es.py /app/
+COPY logstash.conf /app/
 COPY requirements.txt /app/
+
 WORKDIR /app
 RUN pip install -r requirements.txt
