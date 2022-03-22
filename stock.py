@@ -10,6 +10,12 @@ import matplotlib.pyplot as plt
 from matplotlib import ticker
 from mplfinance.original_flavor import candlestick2_ohlc
 
+## ディレクトリアドレス定義。
+filename = './output/company.csv' # 上場法人の会社名による会社コード分類リストディレクトリアドレス
+file = "./output/stock.log"  # infolevelのlogfileディレクトリアドレス
+error = "./output/error.log"  # errorlevelのlogfileディレクトリアドレス
+savefig = "./output/stock.jpg"  # グラフのイメージを保存するディレクトリアドレス
+
 ## 関数定理1 : 韓国取引所上場法人目録から全データを受け、必要な情報を抽出。
 ## - 1. 上場法人の目録がダウンロードできるURLを要請する
 ## - 2. 上場法人の目録から必要とするデータを読み込んでくる
@@ -27,7 +33,6 @@ def get_krx_code():
         # <会社名、種目コードリストcsvファイルで保存>
         stock_code = stock_code.sort_values(by='code')
         krxList = stock_code[['code', 'company']]
-        filename = './output/company.csv'
         # write CSV
         with open(file=filename, mode='w', encoding='utf-8-sig', newline='') as f:
             csv_f = csv.writer(f)
@@ -86,11 +91,11 @@ def get_stock_price(code, str_datefrom):
         mylogger.info('\033[31m' + " Check the 'error.log' file!!")
         logging.error(traceback.format_exc())
 
+## main.
+## - ターミナルから呼び出して使用
 if __name__ == '__main__':
     try:
         # logging --
-        file = "./output/stock.log" # infolevelのlogfileディレクトリアドレス
-        error = "./output/error.log" # errorlevelのlogfileディレクトリアドレス
         mylogger = logging.getLogger("my")  # 特定ロガーで生成
         mylogger.setLevel(logging.INFO)  # INFOレベル以上は出力
 
@@ -136,19 +141,42 @@ if __name__ == '__main__':
         df = get_stock_price(code, str_datefrom)
         # print(df)
 
-        # csvファイル作成/読み込み --
-        datafile = "./output/" + f'{item_name}' + ".csv" # item_nameのcsvfileディレクトリアドレス
+        ## csvファイル作成/読み込み --
+        ##　- 会社名によるcsvfileを生成
+        datafile = "./output/" + f'{item_name}' + ".csv"
         df.to_csv(datafile, encoding='utf-8-sig')  # (item_name終値、ボリュームデータcsvファイル作成(保存) /,index=Falseを使うと、ファイル保存時に自動追加される索引(index)なし
         csvDf = pd.read_csv(datafile, encoding='utf-8-sig', index_col = 0)  # csvファイルの読み込み / index_col = 0 : 第一カラムをindexとして使用するように指定
         # csvDf.drop(['Unnamed: 0'], axis=1, inplace=True) # 上のindex_col = 0の代わりにこのコードも使える / Unnamed: 0カラムをdropして除去
         print(csvDf)  # csvファイルデータ確認
         mylogger.info("Success! save company price file : " + item_name + ".csv")
 
-        # プロットライブラリグラフ表示 --
-        savefig = "./output/stock.jpg" # グラフのイメージを保存するディレクトリアドレス
+        from elasticsearch import helpers, Elasticsearch
+
+        document = {
+            "mappings": {
+                "dynamic": False, "properties": {
+                    "date": {"type": "date"},
+                    "open": {"type": "integer"},
+                    "high": {"type": "integer"},
+                    "low": {"type": "integer"},
+                    "close": {"type": "integer"},
+                    "diff": {"type": "integer"},
+                    "volume": {"type": "integer"}, }}}
+
+        es = Elasticsearch('https://localhost:9200')
+        if es.indices.exists(index="stock"):
+            pass
+        else:
+            es.indices.create(index="stock", body=document)
+        with open('./output/카카오게임즈.csv') as f:
+            reader = csv.DictReader(f)
+        helpers.bulk(es, reader, index="stock")
+
+
+        ## プロットライブラリグラフ表示 --
+        ##　- クローリングした株価のデータからキャンドルグラフで表せる
         fig, ax = plt.subplots(figsize=(18, 9.5))  # 出力ウィンドウのサイズ設定
         plt.rc('font', family='Malgun Gothic')  # ハングル表示されるようにフォント設定
-        plt.rcParams["font.family"] = "NanumGothic"
         # top, bottom position setting
         top_axes = plt.subplot2grid((4, 4), (0, 0), rowspan=3, colspan=4)
         bottom_axes = plt.subplot2grid((4, 4), (3, 0), rowspan=1, colspan=4, sharex=top_axes)
