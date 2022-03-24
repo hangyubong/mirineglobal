@@ -1,0 +1,14 @@
+@startuml
+collections requests as Foo
+collections bs4 as Foo1
+collections Crawler as Foo2
+database    WebSite    as Foo3
+
+Foo -> Foo1 : データリクエスト\n - url
+
+Foo1 -> Foo2 : データパージング\n -html.parser
+Foo2 -> Foo3 : リクエスト by BueatifulSoup
+Foo2 <- Foo3 : \nレスポンスtext/html
+Foo1 <- Foo2 : 結果返還
+Foo <- Foo1 : 情報返還
+@enduml
