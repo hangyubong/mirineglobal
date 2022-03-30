@@ -9,6 +9,7 @@ import logging
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 from mplfinance.original_flavor import candlestick2_ohlc
+from elasticsearch import Elasticsearch
 
 ## ディレクトリアドレス定義。
 filename = './output/company.csv' # 上場法人の会社名による会社コード分類リストディレクトリアドレス
@@ -150,28 +151,24 @@ if __name__ == '__main__':
         print(csvDf)  # csvファイルデータ確認
         mylogger.info("Success! save company price file : " + item_name + ".csv")
 
-        from elasticsearch import helpers, Elasticsearch
+        es = Elasticsearch('http://127.0.0.1:9200')
+        def stock_data(row, stock_nm):
+            doc = {
+                'date': row['date'],
+                'open': row['open'],
+                'high': row['high'],
+                'low': row['low'],
+                'close': row['close'],
+                'diff': row['diff'],
+                'volume': row['volume'],
+                'stock_nm': stock_nm,
+                'timestamp': datetime.datetime.now(),
+            }
+            return doc
 
-        document = {
-            "mappings": {
-                "dynamic": False, "properties": {
-                    "date": {"type": "date"},
-                    "open": {"type": "integer"},
-                    "high": {"type": "integer"},
-                    "low": {"type": "integer"},
-                    "close": {"type": "integer"},
-                    "diff": {"type": "integer"},
-                    "volume": {"type": "integer"}, }}}
-
-        es = Elasticsearch('https://localhost:9200')
-        if es.indices.exists(index="stock"):
-            pass
-        else:
-            es.indices.create(index="stock", body=document)
-        with open('./output/카카오게임즈.csv') as f:
-            reader = csv.DictReader(f)
-        helpers.bulk(es, reader, index="stock")
-
+        for index, row in csvDf.iterrows():
+            doc = stock_data(row, item_name)
+            res = es.index(index=item_name, body=doc)
 
         ## プロットライブラリグラフ表示 --
         ##　- クローリングした株価のデータからキャンドルグラフで表せる
