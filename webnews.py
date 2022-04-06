@@ -18,7 +18,7 @@ else:
     page_num = page + 9 * (page - 1)
 
 # url - 特定のマスコミを利用（東亜日報)
-url = "https://search.naver.com/search.naver?where=news&sm=tab_pge&query=" + search + "%EC%86%8C%ED%94%84%ED%8A%B8%EB%B1%85%ED%81%AC&sm=tab_opt&sort=0&photo=0&field=0&pd=0&ds=&de=&docid=&related=0&mynews=1&office_type=1&office_section_code=1&news_office_checked=1020&nso=so%3Ar%2Cp%3Aall&is_sug_officeid=0&start=" + str(page_num)
+url = "https://search.naver.com/search.naver?where=news&sm=tab_pge&query=" + search + "&sm=tab_opt&sort=0&photo=0&field=0&pd=0&ds=&de=&docid=&related=0&mynews=1&office_type=1&office_section_code=1&news_office_checked=1020&nso=so%3Ar%2Cp%3Aall&is_sug_officeid=0&start=" + str(page_num)
 # https://search.naver.com/search.naver?where=news&query=%EC%86%8C%ED%94%84%ED%8A%B8%EB%B1%85%ED%81%AC&sm=tab_opt&sort=0&photo=0&field=0&pd=0&ds=&de=&docid=&related=0&mynews=1&office_type=1&office_section_code=1&news_office_checked=1020&nso=so%3Ar%2Cp%3Aall&is_sug_officeid=0
 print("url: ", url)
 
@@ -28,7 +28,7 @@ html = BeautifulSoup(req.text, "html.parser")
 
 # 検索の結果
 articles = html.select("div.group_news > ul.list_news > li div.news_area > a")
-print(articles)
+# print(articles)
 
 # 検索された記事の数
 print(len(articles), "個の記事を呼び出し.")
@@ -45,11 +45,13 @@ for i in articles:
     news_url.append(i.attrs['href'])
 print(news_url)
 
+
 # newsの内容をクローリング
 contents = []
+choiceurl = news_url[0]
 for i in news_url:
     # 別々の記事のHTMLを呼び出し
-    news = requests.get(i)
+    news = requests.get(choiceurl)
     news_html = BeautifulSoup(news.text, "html.parser")
 
     # 記事の本文内容を持ってくる
