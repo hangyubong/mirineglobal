@@ -1,6 +1,8 @@
 # ライブラリのよびだし。
 from bs4 import BeautifulSoup
 import requests
+from elasticsearch import Elasticsearch
+import datetime
 
 # キーワードで資料検索。
 search = input("検索のキーワードを入力してください。:")
@@ -33,20 +35,19 @@ articles = html.select("div.group_news > ul.list_news > li div.news_area > a")
 # 検索された記事の数
 print('>', len(articles), "個の記事を呼び出し.")
 
-# newsタイトル呼び出し
+# 1. newsタイトル呼び出し
 news_title = []
 for i in articles:
     news_title.append(i.attrs['title'])
 print('news_title :', news_title)
 
-# newsのURLを呼び出し
+# 2. newsのURLを呼び出し
 news_url = []
 for i in articles:
     news_url.append(i.attrs['href'])
 print('news_url :', news_url)
 
-
-# newsの内容をクローリング
+# 3. newsの本文内容をクローリング
 contents = []
 choiceurl = news_url[0]
 for i in news_url:
@@ -58,7 +59,20 @@ for i in news_url:
     contents = news_html.select("#content > div ") # 共通するPathまでselectする
     for contents in contents: #繰り返し実行するオブジェクトを入れるfor文の作成。
         try:
-            text = contents.select_one("div.article_txt").text
+            text = contents.select_one("div.article_txt").text # 本文の内容をテキストだけ持ってくる
         except AttributeError:
             continue
 print("\n" + "本文：" + text)
+
+es = Elasticsearch('http://127.0.0.1:9200')
+def insertData():
+    index = search
+    doc = {
+        "title": news_title[0],
+        "link": news_url[0],
+        "contents": text,
+        "timestamp": datetime.datetime.now(),
+    }
+    es.index(index=index, doc_type="_doc", body=doc)
+    print("success create index!")
+insertData()
