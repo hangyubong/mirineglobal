@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <Configuration packages="com.amazonaws.services.lambda.runtime.log4j2">
   <Appenders>
     <Lambda name="Lambda">
@@ -14,21 +13,3 @@
     </Root>
   </Loggers>
 </Configuration>
-
-<!-- <Configuration>
-	로그 출력 방식
-	<Appenders>
-    	콘솔 출력 방식
-		<Console name="console-log" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n" />
-		</Console>
-	</Appenders>
-	
-	<Loggers>
-		<Logger name="moniter.PrinterClient" level="DEBUG"></Logger>
-		<Root level="DEBUG">
-			<appender-ref ref="console-log" level="DEBUG" />
-		</Root>
-	</Loggers>
-</Configuration> -->
-
