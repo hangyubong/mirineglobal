@@ -31,48 +31,39 @@ public class MgMemberService {
 		
 	}
 	
-	public void insertMember() throws ParseException {
+	public void insertMember(MgMemberTable member) {
 
-		String my = "hangyubong";
-		
-//		//현재시간설정(일본시간.) -- ***Calendar API는 사용시 타입불투명, 모호한상수, 월계산형식, 불변이아니므로 캘린도 공유시 변경값 같이 적용 등등 결함이 많아 잘사용하지않음
-//		Date nowDate = new Date();
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTime(nowDate);
-//        calendar.set(Calendar.HOUR,calendar.get(Calendar.HOUR)+9);//
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-//        String date2 = simpleDateFormat.format(calendar.getTime());
+//		String my = "hangyubong";
+//		
+////		//현재시간설정(일본시간.) -- ***Calendar API는 사용시 get타입불투명, 모호한상수, 월계산형식, 불변이아니므로 캘린도 공유시 변경값 같이 적용 등등 결함이 많아 잘사용하지않음
 
-		LocalDateTime ldtjst = LocalDateTime.now(ZoneId.of("Asia/Tokyo")); // LocalDateTime 사용 일본표준시간 JST 현재시간
-		ZonedDateTime zdtjst = ZonedDateTime.now(ZoneId.of("Asia/Tokyo")); // ZonedDateTime 사용 일본표준시간 JST 현재시간
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        String nowDate = formatter.format(ldtjst); 
-        String nowDate2 = formatter.format(zdtjst);
-		
-        //포맷설정
-		String birthDay = "19910716";
-		SimpleDateFormat dtFormat = new SimpleDateFormat("yyyyMMdd");
-		SimpleDateFormat newDtFormat = new SimpleDateFormat("yyyy/MM/dd");
-		Date formatDate = dtFormat.parse(birthDay);
-		String strNewDtFormat = newDtFormat.format(formatDate);
-
-		//member	
-		MgMemberTable item = new MgMemberTable();
-        item.setId("mg11");
-        item.setMgName("semi");     
-        item.setBirth_date(strNewDtFormat);
-        item.setEmail_address("semi@gmail.com");
-        item.setCreated_at(nowDate);
-        item.setUpdated_at(nowDate2);
-        item.setInsert_user(my);
-        item.setUpdated_user(my);
-        item.setVersion(0);
-        
-        
-		// mapper.save
-        dynamoDBMapper.save(item);		      
-
+//        //포맷설정
+//		String birthDay = "1991/07/16";
+//
+//		//member -- 일반 등록시.	
+//		MgMemberTable item = new MgMemberTable();
+//        item.setId("mg11");
+//        item.setMgName("semi");     
+//        item.setBirth_date(birthDay);
+//        item.setEmail_address("semi@gmail.com");
+//        item.setCreated_at(getNowTime());
+//        item.setUpdated_at(getNowTime());
+//        item.setInsert_user(my);
+//        item.setUpdated_user(my);
+//        item.setVersion(0);
+//        
+//		// mapper.save
+//        dynamoDBMapper.save(item); //일반등록시.		      
+		dynamoDBMapper.save(member); //Map에 event저장하여 등록시.
 	
+	}
+	
+	private String getNowTime() {
+		ZonedDateTime zdtjst = ZonedDateTime.now(ZoneId.of("UTC")); // ZonedDateTime 사용 일본표준시간 JST 현재시간
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        String nowDate = formatter.format(zdtjst);
+        
+        return nowDate;
 	}
 
 }

@@ -3,6 +3,7 @@ package com.amazonaws.lambda.demo.table;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.document.Item;
 
 @DynamoDBTable(tableName = "MG_MEMBER")
 public class MgMemberTable {
@@ -95,9 +96,9 @@ public class MgMemberTable {
 		
 	}	
 	public void setVersion(int version) {
-		this.version = version;	
+		this.version += version + 1;	
 	}
-	
+
 	
 	
 }

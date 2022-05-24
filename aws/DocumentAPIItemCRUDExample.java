@@ -16,6 +16,10 @@
 package com.amazonaws.lambda.demo.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,8 +40,8 @@ import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 
 public class DocumentAPIItemCRUDExample {
 	
-    public AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
-    public DynamoDB dynamoDB = new DynamoDB(client);
+    public static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
+    public static DynamoDB dynamoDB = new DynamoDB(client);
 
     static String tableName = "MG_MEMBER";
 
@@ -45,48 +49,49 @@ public class DocumentAPIItemCRUDExample {
 //
 //        createItems();
 //
-////        retrieveItem();
-////
-////        // Perform various updates.
-////        updateMultipleAttributes();
-////        updateAddNewAttribute();
-////        updateExistingAttributeConditionally();
-////
-////        // Delete the item.
-////        deleteItem();
+//        retrieveItem();
+//
+//        // Perform various updates.
+//        updateMultipleAttributes();
+//        updateAddNewAttribute();
+//        updateExistingAttributeConditionally();
+//
+//        // Delete the item.
+//        deleteItem();
 //
 //    }
 
     public void createItems() {
-//    	public static String id;
-//    	public static String mg_name;
-//    	public static String birth_date;
-//    	public static String email_address;
-//    	public static String created_at;
-//    	public static String updated_at;
-//    	public static String insert_user;
-//    	public static String updated_user;
-//    	public static int version;
-
         Table table = dynamoDB.getTable(tableName);
+        
+        LocalDateTime ldt = LocalDateTime.now(ZoneId.of("Asia/Tokyo"));
+        ZonedDateTime zdt = ZonedDateTime.now(ZoneId.of("UTC"));
+        DateTimeFormatter fomatter = DateTimeFormatter.ofPattern("yyyy/mm/dd HH:mm:ss");
+        String nowDate = fomatter.format(ldt);
+        String nowDate2 = fomatter.format(zdt);
+        
         try {
 
-            Item item = new Item().withPrimaryKey("id", "mg12").withString("mg_name", "Johns")
-                .withString("birth_date", "1990/11/15")
-                .withString("email_address", "Jhons@gmail.com")
-                .withString("created_at", "20220523")
-                .withString("updated_at", "20220523")
+            Item item = new Item().withPrimaryKey("id", "mg13").withString("mg_name", "Jeny")
+                .withString("birth_date", "1992/09/06")
+                .withString("email_address", "Jeny@gmail.com")
+                .withString("created_at", nowDate)
+                .withString("updated_at", nowDate2)
                 .withString("insert_user", "hangyubong")
                 .withString("updated_user", "hangyubong")
-                .withNumber("version", 12);
+                .withNumber("version", 13);
             table.putItem(item);
 
-//            item = new Item().withPrimaryKey("Id", 121).withString("Title", "Book 121 Title")
-//                .withString("ISBN", "121-1111111111")
-//                .withStringSet("Authors", new HashSet<String>(Arrays.asList("Author21", "Author 22")))
-//                .withNumber("Price", 20).withString("Dimensions", "8.5x11.0x.75").withNumber("PageCount", 500)
-//                .withBoolean("InPublication", true).withString("ProductCategory", "Book");
-//            table.putItem(item);
+            item = new Item().withPrimaryKey("id", "mg14").withString("mg_name", "clock")
+                    .withString("birth_date", "1987/12/26")
+                    .withString("email_address", "clock@gmail.com")
+                    .withString("created_at", nowDate)
+                    .withString("updated_at", nowDate2)
+                    .withString("insert_user", "hangyubong")
+                    .withString("updated_user", "hangyubong")
+                    .withNumber("version", 14);
+                table.putItem(item);
+                
 
         }
         catch (Exception e) {
