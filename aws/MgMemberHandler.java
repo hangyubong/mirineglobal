@@ -21,12 +21,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.lambda.demo.Handler;
-import com.amazonaws.lambda.demo.guide.PersonResponse;
 import com.amazonaws.lambda.demo.service.MgMemberService;
 import com.amazonaws.lambda.demo.service.DocumentAPIItemCRUDExample;
+import com.amazonaws.lambda.demo.service.MgClientService;
+import com.amazonaws.lambda.demo.table.ClientInfo;
+import com.amazonaws.lambda.demo.table.MgClientTable;
 import com.amazonaws.lambda.demo.table.MgMemberTable;
-
- 
 
 public class MgMemberHandler implements RequestHandler<Object, String> {
 
@@ -35,38 +35,63 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
     private AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build();
     private DynamoDBMapper dynamoDBMapper; 
     private MgMemberService service = new MgMemberService(client);
+    private MgClientService clientService = new MgClientService(client);
     private DocumentAPIItemCRUDExample crude = new DocumentAPIItemCRUDExample();
 
     private String DYNAMODB_TABLE_NAME = "MG_MEMBER";
-
+//    private String DYNAMODB_TABLE_NAME = "MG_CLIENT";
+    
     public String handleRequest(Object event, Context context) {
     	
     	logger.info(event.toString());
-    	// event Map에 저장
-    	Map<String, String> eventMap = (Map<String, String>) event;
-    	// Map을 MgMemberTable에 저장
-    	MgMemberTable member = mapToMgMemberTable(eventMap);
+//    	// event Map에 저장
+//    	Map<String, String> eventMap = (Map<String, String>) event;
+//    	// Map을 MgMemberTable에 저장
+//    	MgMemberTable member = mapToMgMemberTable(eventMap);
     	// MgMemberTable 등록
-    	service.insertMember(member);
+    	service.insertMember();
+    	
+    	
+//    	//event를 Map에 저장
+//    	Map<String, String> eventMapC = (Map<String, String>) event;
+//    	//Map을 MgClientTable에 저장
+//    	MgClientTable client = mapToMgClientTable(eventMapC);
+//    	//MgClientTable 등록 실행
+    	
+//    	clientService.createTable(client);
     	
 //    	crude.createItems();
 		return "success!!" +  DYNAMODB_TABLE_NAME;
         
     }
     
-    private MgMemberTable mapToMgMemberTable(Map<String, String> event) {
-    	MgMemberTable member = new MgMemberTable();
-    	member.setId(event.get("id"));
-    	member.setMgName(event.get("mg_name"));
-    	member.setBirth_date(event.get("birth_date"));
-    	member.setEmail_address(event.get("email_address"));
-    	member.setCreated_at(event.get("created_at"));
-    	member.setUpdated_at(event.get("updated_at"));
-    	member.setInsert_user(event.get("insert_user"));
-    	member.setUpdated_user(event.get("updated_user"));
-    	member.setVersion(event.get("version").compareTo(DYNAMODB_TABLE_NAME));
-    	
-    	return member;
-    }
+    
+    //MgClientTable에 등록할 데이터 생성
+//	private MgClientTable mapToMgClientTable(Map<String, String> event) {
+//		MgClientTable client = new MgClientTable();
+//		ClientInfo clientInfo = new ClientInfo();
+//		
+//		client.setId(event.get("id"));
+//		clientInfo.setAddress(event.get("address"));
+//		clientInfo.setEmail_address(event.get("email_address"));
+//		clientInfo.setFullName(event.get("full_name"));
+//		client.setClientInfo(clientInfo);
+//				
+//		return client;
+//	}
+    
+//    private MgMemberTable mapToMgMemberTable(Map<String, String> event) {
+//    	//json으로 등록할 데이터 생성
+//    	MgMemberTable member = new MgMemberTable();
+//    	member.setId(event.get("id"));
+//    	member.setMgName(event.get("mg_name"));
+//    	member.setBirth_date(event.get("birth_date"));
+//    	member.setEmail_address(event.get("email_address"));
+//    	
+//    	return member;
+//    }
 
+    	
+
+    
 }
