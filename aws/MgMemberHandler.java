@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.lambda.demo.Handler;
+import com.amazonaws.lambda.demo.guide.DynamoDBMapperQueryScanExample;
 import com.amazonaws.lambda.demo.service.MgMemberService;
 import com.amazonaws.lambda.demo.service.DocumentAPIItemCRUDExample;
 import com.amazonaws.lambda.demo.service.MgClientService;
@@ -36,20 +37,24 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
     private DynamoDBMapper dynamoDBMapper; 
     private MgMemberService service = new MgMemberService(client);
     private MgClientService clientService = new MgClientService(client);
+    private DynamoDBMapperQueryScanExample QueryScantService = new DynamoDBMapperQueryScanExample(client);
     private DocumentAPIItemCRUDExample crude = new DocumentAPIItemCRUDExample();
 
+    
     private String DYNAMODB_TABLE_NAME = "MG_MEMBER";
 //    private String DYNAMODB_TABLE_NAME = "MG_CLIENT";
     
     public String handleRequest(Object event, Context context) {
     	
-    	logger.info(event.toString());
+    	QueryScantService.getMember();
+    	
+//    	logger.info(event.toString(), QueryScantService.getMember());
 //    	// event Map에 저장
 //    	Map<String, String> eventMap = (Map<String, String>) event;
 //    	// Map을 MgMemberTable에 저장
 //    	MgMemberTable member = mapToMgMemberTable(eventMap);
     	// MgMemberTable 등록
-    	service.insertMember();
+//    	service.insertMember();
     	
     	
 //    	//event를 Map에 저장
@@ -61,8 +66,16 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
 //    	clientService.createTable(client);
     	
 //    	crude.createItems();
+    	
+    	/**
+    	 * batch 
+    	 */
+    	// event Map에 저장
+//    	Map<String, String> eventMap = (Map<String, String>) event;
+//    	service.batchMembers();
+    	
 		return "success!!" +  DYNAMODB_TABLE_NAME;
-        
+
     }
     
     

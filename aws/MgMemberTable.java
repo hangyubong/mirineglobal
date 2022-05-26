@@ -1,6 +1,7 @@
 package com.amazonaws.lambda.demo.table;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
@@ -103,5 +104,14 @@ public class MgMemberTable {
 	public void setVersion(int version) {
 		this.version += version + 1;	
 	}
+
+	@Override
+	public String toString() {
+		return "MgMemberTable [getId()=" + getId() + ", getMgName()=" + getMgName() + ", getBirth_date()="
+				+ getBirth_date() + ", getEmail_address()=" + getEmail_address() + ", getCreated_at()="
+				+ getCreated_at() + ", getUpdated_at()=" + getUpdated_at() + ", getInsert_user()=" + getInsert_user()
+				+ ", getUpdated_user()=" + getUpdated_user() + ", getVersion()=" + getVersion() + "]";
+	}
+	
 
 }
