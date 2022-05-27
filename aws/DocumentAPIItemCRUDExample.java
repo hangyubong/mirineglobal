@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import com.amazonaws.lambda.demo.guide.DynamoDBMapperQueryScanExample;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DeleteItemOutcome;
@@ -38,7 +39,11 @@ import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class DocumentAPIItemCRUDExample {
+	static final Logger logger = LogManager.getLogger(DynamoDBMapperQueryScanExample.class);
 	
     public static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
     public static DynamoDB dynamoDB = new DynamoDB(client);
@@ -64,10 +69,10 @@ public class DocumentAPIItemCRUDExample {
     public void createItems() {
         Table table = dynamoDB.getTable(tableName);
         
-        LocalDateTime ldt = LocalDateTime.now(ZoneId.of("Asia/Tokyo"));
-        ZonedDateTime zdt = ZonedDateTime.now(ZoneId.of("UTC"));
+//        LocalDateTime ldt = LocalDateTime.now(ZoneId.of("Asia/Tokyo"));
+        ZonedDateTime zdt = ZonedDateTime.now(ZoneId.of("UTC")); //LocalDateTime보다는 ZoneID를 쓰기때문에 ZonedDateTime쓰도록함.
         DateTimeFormatter fomatter = DateTimeFormatter.ofPattern("yyyy/mm/dd HH:mm:ss");
-        String nowDate = fomatter.format(ldt);
+//        String nowDate = fomatter.format(ldt);
         String nowDate2 = fomatter.format(zdt);
         
         try {
@@ -75,20 +80,20 @@ public class DocumentAPIItemCRUDExample {
             Item item = new Item().withPrimaryKey("id", "mg13").withString("mg_name", "Jeny")
                 .withString("birth_date", "1992/09/06")
                 .withString("email_address", "Jeny@gmail.com")
-                .withString("created_at", nowDate)
+                .withString("created_at", nowDate2)
                 .withString("updated_at", nowDate2)
-                .withString("insert_user", "hangyubong")
-                .withString("updated_user", "hangyubong")
+                .withString("insert_user", "insert-admin")
+                .withString("updated_user", "insert-admin")
                 .withNumber("version", 13);
             table.putItem(item);
 
             item = new Item().withPrimaryKey("id", "mg14").withString("mg_name", "clock")
                     .withString("birth_date", "1987/12/26")
                     .withString("email_address", "clock@gmail.com")
-                    .withString("created_at", nowDate)
+                    .withString("created_at", nowDate2)
                     .withString("updated_at", nowDate2)
-                    .withString("insert_user", "hangyubong")
-                    .withString("updated_user", "hangyubong")
+                    .withString("insert_user", "insert-admin")
+                    .withString("updated_user", "insert-admin")
                     .withNumber("version", 14);
                 table.putItem(item);
                 
@@ -195,27 +200,27 @@ public class DocumentAPIItemCRUDExample {
 //        }
 //    }
 //
-//    private static void deleteItem() {
+    
+//    public void deleteItem() {//수정필요.
 //
-//        Table table = dynamoDB.getTable(tableName);
-//
+//        Table table = dynamoDB.getTable("MG_MEMBER");
 //        try {
 //
-//            DeleteItemSpec deleteItemSpec = new DeleteItemSpec().withPrimaryKey("Id", 120)
-//                .withConditionExpression("#ip = :val").withNameMap(new NameMap().with("#ip", "InPublication"))
-//                .withValueMap(new ValueMap().withBoolean(":val", false)).withReturnValues(ReturnValue.ALL_OLD);
+//            DeleteItemSpec deleteItemSpec = new DeleteItemSpec().withPrimaryKey("id", "mg16")
+//                .withConditionExpression("mg_name = :val").withNameMap(new NameMap().with("mg_name", "山田　太郎"))
+//                .withValueMap(new ValueMap().withBoolean("山田　太郎", false)).withReturnValues(ReturnValue.ALL_OLD);
 //
 //            DeleteItemOutcome outcome = table.deleteItem(deleteItemSpec);
 //
 //            // Check the response.
-//            System.out.println("Printing item that was deleted...");
-//            System.out.println(outcome.getItem().toJSONPretty());
-//
+//            logger.info(outcome.getItem().toJSONPretty());
 //        }
+//        
 //        catch (Exception e) {
 //            System.err.println("Error deleting item in " + tableName);
 //            System.err.println(e.getMessage());
 //        }
 //    }
-}
+    
+}//END class
 

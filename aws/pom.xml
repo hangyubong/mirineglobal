@@ -55,14 +55,34 @@
       <dependency>
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk-bom</artifactId>
-        <version>1.11.256</version>
+        <version>1.12.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- dynamodb v2 追加-->
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>2.16.1</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- END dynamodb v2 追加-->       
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+  
+  <!-- dynamodb v2 追加-->
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-s3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>dynamodb</artifactId>
+    </dependency>
+  <!-- END dynamodb v2 追加-->
   
   <!-- Gson lib追加-->
 	<dependency> 

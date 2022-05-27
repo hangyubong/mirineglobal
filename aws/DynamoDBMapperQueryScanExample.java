@@ -1,5 +1,5 @@
 package com.amazonaws.lambda.demo.guide;
-
+ 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+ 
 import com.amazonaws.lambda.demo.handler.MgMemberHandler;
 import com.amazonaws.lambda.demo.table.MgMemberTable;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -36,19 +37,23 @@ import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 public class DynamoDBMapperQueryScanExample {
+
 	static final Logger logger = LogManager.getLogger(DynamoDBMapperQueryScanExample.class);
+
 	private DynamoDBMapper dynamoDBMapper;
-
+ 
 	public DynamoDBMapperQueryScanExample(AmazonDynamoDB client) {
-
+ 
 		dynamoDBMapper = new DynamoDBMapper(client);
-
+ 
 	}
+
 
     public void getMember() {
     	try {
-    		
+		
 //    		DynamoDBMapper mapper = new DynamoDBMapper(client);
+
     		
     		//scan으로 취득
 //    		Map<String, AttributeValue> values = new HashMap<String, AttributeValue>();
@@ -73,24 +78,36 @@ public class DynamoDBMapperQueryScanExample {
 //    		logger.info("mg_name? " + result.get(0).getMgName());//get(0)은 목록의 첫번째 데이터를 가리킴 
 //    		logger.info("result size ? " + result.size());//결과가 몇개인지.
 
-    		AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
-    		DynamoDB dynamoDB = new DynamoDB(client);
 
-    		Table table = dynamoDB.getTable("MG_MEMBER");
-    		Index index = table.getIndex("MG_MEMBER_GSI_1");
+    		//Global Secondary Index -scan으로 취득
+//    		Map<String, AttributeValue> values = new HashMap<String, AttributeValue>();
+//    		values.put(":v1", new AttributeValue().withS("1990"));
+//    		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+//    				.withIndexName("MG_MEMBER_GSI_1")
+//    				.withFilterExpression("birth_date >= :v1")
+//    				.withExpressionAttributeValues(values);
+//    		List<MgMemberTable> result = dynamoDBMapper.scan(MgMemberTable.class, scanExpression);
+//    		
+////    		logger.info("birth_date? " + result.get(0).getBirth_date());
+//    		logger.info("birth_date? " + result.get(12).getBirth_date());
+//    		logger.info("result size ? " + result.size());   		
 
-    		QuerySpec spec = new QuerySpec()
-    		    .withKeyConditionExpression("id = :v")
-    		    .withNameMap(new NameMap()
-    		        .with("id", "mg_name"))
-    		    .withValueMap(new ValueMap()
-    		        .withString(":v","mi"));
-    		MgMemberTable member = new MgMemberTable();
-    		ItemCollection<QueryOutcome> items = index.query(spec);
-    		Iterator<Item> iter = items.iterator(); 
-    		while (iter.hasNext()) {
-    			logger.info("mg_name? " + member.getMgName());
-    		}  		
+    		//Global Secondary Index - query로 취득--query취득은 partition key로 해당정보내에서만 취득가능
+    		HashMap<String, AttributeValue> values = new HashMap<String, AttributeValue>();
+    		values.put(":v1",  new AttributeValue().withS("miura"));
+    		values.put(":v2",  new AttributeValue().withS("19"));
+
+    		DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
+    		    .withIndexName("MG_MEMBER_GSI_1")
+    		    .withConsistentRead(false)
+    		    .withKeyConditionExpression("mg_name = :v1 and begins_with(birth_date, :v2)")
+    		    .withExpressionAttributeValues(values);
+
+    		List<MgMemberTable> result =  dynamoDBMapper.query(MgMemberTable.class, queryExpression);
+    		logger.info("mg_name? " + result.get(0).getMgName());//get(0)은 목록의 첫번째 데이터를 가리킴 
+    		logger.info("birth_date? " + result.get(0).getBirth_date());//get(0)은 목록의 첫번째 데이터를 가리킴 
+    		logger.info("result size ? " + result.size());//결과가 몇개인지.
+
 
         }
         catch (Throwable t) {
@@ -99,8 +116,6 @@ public class DynamoDBMapperQueryScanExample {
         }
     }
 
+    
 
-    
-    
 }//END class
-

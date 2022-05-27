@@ -102,7 +102,7 @@ public class MgMemberTable {
 		
 	}	
 	public void setVersion(int version) {
-		this.version += version + 1;	
+		this.version = version;	
 	}
 
 	@Override
