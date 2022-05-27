@@ -63,8 +63,15 @@
   </dependencyManagement>
 
   <dependencies>
- 
-   
+  
+  <!-- Gson lib追加-->
+	<dependency> 
+	  <groupId>com.google.code.gson</groupId>
+	  <artifactId>gson</artifactId>
+	  <version>2.8.7</version>
+	</dependency>
+  <!-- end Gson lib追加-->   
+    
   <!-- log4jにjarfile追加-->
   <dependency>
     <groupId>com.amazonaws</groupId>
