@@ -13,8 +13,8 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey; 
 
-@DynamoDBTable(tableName = "MG_MEMBER")
-public class MgMemberTable {
+@DynamoDbBean
+public class MgMemberTableV2 {
 
 	public static String id;
 	public static String mg_name;
@@ -27,12 +27,11 @@ public class MgMemberTable {
 	public static int version;
 
 
-	@DynamoDBHashKey(attributeName = "id")
+	@DynamoDbPartitionKey
 	public String getId() {
 		return id;
 	}
 	
-	@DynamoDBAttribute(attributeName = "mg_name")
 	public String getMgName() {
 		return mg_name;		
 	}
@@ -45,7 +44,6 @@ public class MgMemberTable {
 		this.mg_name = mg_name;
 	}
 
-	@DynamoDBAttribute(attributeName = "birth_date")
 	public String getBirth_date() {
 		return birth_date;
 		
@@ -54,7 +52,6 @@ public class MgMemberTable {
 		this.birth_date = birth_date;	
 	}
 	
-	@DynamoDBAttribute(attributeName = "email_address")
 	public String getEmail_address() {
 		return email_address;
 		
@@ -63,7 +60,6 @@ public class MgMemberTable {
 		this.email_address = email_address;	
 	}
 	
-	@DynamoDBAttribute(attributeName = "created_at")
 	public String getCreated_at() {
 		return created_at;
 		
@@ -72,7 +68,6 @@ public class MgMemberTable {
 		this.created_at = created_at;	
 	}
 	
-	@DynamoDBAttribute(attributeName = "updated_at")
 	public String getUpdated_at() {
 		return updated_at;
 		
@@ -81,7 +76,6 @@ public class MgMemberTable {
 		this.updated_at = updated_at;	
 	}
 	
-	@DynamoDBAttribute(attributeName = "insert_user")
 	public String getInsert_user() {
 		return mg_name;
 		
@@ -90,7 +84,6 @@ public class MgMemberTable {
 		this.insert_user = insert_user;	
 	}
 	
-	@DynamoDBAttribute(attributeName = "updated_user")
 	public String getUpdated_user() {
 		return updated_user;
 		
@@ -99,7 +92,6 @@ public class MgMemberTable {
 		this.updated_user = updated_user;	
 	}
 	
-	@DynamoDBAttribute(attributeName = "version")
 	public int getVersion() {
 		return version;
 		
@@ -115,6 +107,8 @@ public class MgMemberTable {
 				+ getCreated_at() + ", getUpdated_at()=" + getUpdated_at() + ", getInsert_user()=" + getInsert_user()
 				+ ", getUpdated_user()=" + getUpdated_user() + ", getVersion()=" + getVersion() + "]";
 	}
+	
+	
 	
 
 }

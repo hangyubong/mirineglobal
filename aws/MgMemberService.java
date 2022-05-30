@@ -179,7 +179,7 @@ public class MgMemberService {
 	private MgMemberTable getMembers(String id) {
 		MgMemberTable mg = new MgMemberTable();
 		mg.setId(id);
-		return mg;
+		return mg;	
 	}
 
 	
