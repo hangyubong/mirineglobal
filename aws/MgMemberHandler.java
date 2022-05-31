@@ -29,6 +29,7 @@ import com.amazonaws.lambda.demo.guide.DynamoDBMapperQueryScanExample;
 import com.amazonaws.lambda.demo.service.MgMemberService;
 import com.amazonaws.lambda.demo.service.DocumentAPIItemCRUDExample;
 import com.amazonaws.lambda.demo.service.DynamoDBMapperCRUDExample;
+import com.amazonaws.lambda.demo.service.DynamoDBScanItems;
 import com.amazonaws.lambda.demo.service.EnhancedPutItem;
 import com.amazonaws.lambda.demo.service.MgClientService;
 import com.amazonaws.lambda.demo.table.ClientInfo;
@@ -48,6 +49,8 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
 //    private DynamoDBMapperQueryScanExample QueryScantService = new DynamoDBMapperQueryScanExample(client);
 //    private DocumentAPIItemCRUDExample crude = new DocumentAPIItemCRUDExample();
 //    private DynamoDBMapperCRUDExample MapperCRUD = new DynamoDBMapperCRUDExample();
+	  private DynamoDBScanItems dbScanItems = new DynamoDBScanItems();
+	
     
     private EnhancedPutItem enhancedPutItem = new EnhancedPutItem(); //dynamoDB sdk_v2 
     
@@ -66,11 +69,13 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
 //    	enhancedPutItem.batchMembers();
     	  	
 //    	enhancedPutItem.createMembers(ddb, input); //dynamoDB sdk_v2 복수 등록. -- for문.
-    	enhancedPutItem.putBatchRecords(enhancedClient); //dynamoDB sdk_v2 복수 등록.
+//    	enhancedPutItem.putBatchRecords(enhancedClient); //dynamoDB sdk_v2 복수 등록.
 //    	enhancedPutItem.deleteDymamoDBItems(ddb); //dynamoDB sdk_v2 복수 등록.
     	
 //    	QueryScantService.getMember(); //Query 및 Scant으로 데이터 취득. / global index로 데이터 취득.	
 //    	logger.info(event.toString(), QueryScantService.getMember());
+    	
+    	dbScanItems.scanItems(ddb); //dynamoDB sdk_v2 scan 데이터 취득.
     	
     	
 //=================================================event test json으로 등록시-- ===========================================================    	
