@@ -40,11 +40,11 @@ public class MgMember {
 		this.emailAddress = emailAddress;
 	}
 
-	@Override
-	public String toString() {
-		return "MgMember [id=" + id + ", mgName=" + mgName + ", birthDate=" + birthDate + ", emailAddress="
-				+ emailAddress + "]";
-	}
+//	@Override
+//	public String toString() {
+//		return "MgMember [id=" + id + ", mgName=" + mgName + ", birthDate=" + birthDate + ", emailAddress="
+//				+ emailAddress + "]";
+//	}
 
 	
 	

@@ -37,6 +37,7 @@ import com.amazonaws.lambda.demo.table.MgMemberTable;
 
 public class MgMemberHandler implements RequestHandler<Object, String> {
 	DynamoDbClient ddb;
+	Object input;
 	static final Logger logger = LogManager.getLogger(MgMemberHandler.class);
 //	private static final DynamoDbEnhancedClient DynamoDbEnhancedClient = null;
 //    private DynamoDB dynamoDb;
@@ -59,16 +60,20 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
     				.build();
     	
 //    	enhancedPutItem.putRecord(enhancedClient); //dynamoDB sdk_v2 1건 등록.
-    	enhancedPutItem.putBatchRecords(enhancedClient); //dynamoDB sdk_v2 복수 등록.
-//    	enhancedPutItem.batchMembers();
-    	
 //    	enhancedPutItem.deleteDymamoDBItem(ddb);//dynamoDB sdk_v2 1건 삭제.
 //    	enhancedPutItem.updateTableItem(ddb);//dynamoDB sdk_v2 1건 업데이트.
-    	   	
+    	
+//    	enhancedPutItem.batchMembers();
+    	  	
+//    	enhancedPutItem.createMembers(ddb, input); //dynamoDB sdk_v2 복수 등록. -- for문.
+    	enhancedPutItem.putBatchRecords(enhancedClient); //dynamoDB sdk_v2 복수 등록.
+//    	enhancedPutItem.deleteDymamoDBItems(ddb); //dynamoDB sdk_v2 복수 등록.
+    	
 //    	QueryScantService.getMember(); //Query 및 Scant으로 데이터 취득. / global index로 데이터 취득.	
 //    	logger.info(event.toString(), QueryScantService.getMember());
     	
-//--event test json으로 등록시-- ===========================================================    	
+    	
+//=================================================event test json으로 등록시-- ===========================================================    	
 //    	// event Map에 저장
 //    	Map<String, String> eventMap = (Map<String, String>) event;
 //    	// Map을 MgMemberTable에 저장
