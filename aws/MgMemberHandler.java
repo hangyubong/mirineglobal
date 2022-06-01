@@ -25,12 +25,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.lambda.demo.Handler;
+import com.amazonaws.lambda.demo.backup.DocumentAPIItemCRUDExample;
+import com.amazonaws.lambda.demo.backup.DynamoDBMapperCRUDExample;
+import com.amazonaws.lambda.demo.backup.EnhancedPutItem;
+import com.amazonaws.lambda.demo.backup.Query;
 import com.amazonaws.lambda.demo.guide.DynamoDBMapperQueryScanExample;
 import com.amazonaws.lambda.demo.service.MgMemberService;
-import com.amazonaws.lambda.demo.service.DocumentAPIItemCRUDExample;
-import com.amazonaws.lambda.demo.service.DynamoDBMapperCRUDExample;
-import com.amazonaws.lambda.demo.service.DynamoDBScanItems;
-import com.amazonaws.lambda.demo.service.EnhancedPutItem;
+import com.amazonaws.lambda.demo.service.MgMemberServiceV2;
 import com.amazonaws.lambda.demo.service.MgClientService;
 import com.amazonaws.lambda.demo.table.ClientInfo;
 import com.amazonaws.lambda.demo.table.MgClientTable;
@@ -38,21 +39,18 @@ import com.amazonaws.lambda.demo.table.MgMemberTable;
 
 public class MgMemberHandler implements RequestHandler<Object, String> {
 	DynamoDbClient ddb;
-	Object input;
 	static final Logger logger = LogManager.getLogger(MgMemberHandler.class);
 //	private static final DynamoDbEnhancedClient DynamoDbEnhancedClient = null;
-//    private DynamoDB dynamoDb;
-//    private AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build();
-//    private DynamoDBMapper dynamoDBMapper; 
-//    private MgMemberService service = new MgMemberService(client);
+    private DynamoDB dynamoDb;
+    private AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build();
+    private DynamoDBMapper dynamoDBMapper; 
+    private MgMemberService service = new MgMemberService(client);
+    private MgMemberServiceV2 serviceV2 = new MgMemberServiceV2();
 //    private MgClientService clientService = new MgClientService(client);
-//    private DynamoDBMapperQueryScanExample QueryScantService = new DynamoDBMapperQueryScanExample(client);
-//    private DocumentAPIItemCRUDExample crude = new DocumentAPIItemCRUDExample();
-//    private DynamoDBMapperCRUDExample MapperCRUD = new DynamoDBMapperCRUDExample();
-	  private DynamoDBScanItems dbScanItems = new DynamoDBScanItems();
-	
+	private MgMemberServiceV2 dbScanItems = new MgMemberServiceV2();
+	private Query query = new Query();
     
-    private EnhancedPutItem enhancedPutItem = new EnhancedPutItem(); //dynamoDB sdk_v2 
+    private EnhancedPutItem enhancedPutItem; //dynamoDB sdk_v2 
     
     private String DYNAMODB_TABLE_NAME = "MG_MEMBER";
 //    private String DYNAMODB_TABLE_NAME = "MG_CLIENT";
@@ -62,23 +60,27 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
     	DynamoDbEnhancedClient enhancedClient = software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient.builder().dynamoDbClient(ddb)
     				.build();
     	
-//    	enhancedPutItem.putRecord(enhancedClient); //dynamoDB sdk_v2 1건 등록.
-//    	enhancedPutItem.deleteDymamoDBItem(ddb);//dynamoDB sdk_v2 1건 삭제.
-//    	enhancedPutItem.updateTableItem(ddb);//dynamoDB sdk_v2 1건 업데이트.
+    	excuteV2();
+    	serviceV2.putRecord(enhancedClient); //dynamoDB sdk_v2 1건 등록.
+    	serviceV2.deleteDymamoDBItem(ddb);//dynamoDB sdk_v2 1건 삭제.
+    	serviceV2.updateTableItem(ddb);//dynamoDB sdk_v2 1건 업데이트.
     	
-//    	enhancedPutItem.batchMembers();
-    	  	
-//    	enhancedPutItem.createMembers(ddb, input); //dynamoDB sdk_v2 복수 등록. -- for문.
-//    	enhancedPutItem.putBatchRecords(enhancedClient); //dynamoDB sdk_v2 복수 등록.
-//    	enhancedPutItem.deleteDymamoDBItems(ddb); //dynamoDB sdk_v2 복수 등록.
+    	serviceV2.createMembers(event); //dynamoDB sdk_v2 복수 등록. -- for문.
+    	serviceV2.putBatchRecords(enhancedClient); //dynamoDB sdk_v2 복수 등록.
+    	serviceV2.deleteBatchRecords(enhancedClient);//dynamoDB sdk_v2 복수 삭제.
     	
-//    	QueryScantService.getMember(); //Query 및 Scant으로 데이터 취득. / global index로 데이터 취득.	
-//    	logger.info(event.toString(), QueryScantService.getMember());
-    	
+    	service.getMember(); //Query 및 Scan으로 데이터 취득. / global index로 데이터 취득.	
+//    	logger.info(event.toString(), service.getMember());
+
+
     	dbScanItems.scanItems(ddb); //dynamoDB sdk_v2 scan 데이터 취득.
+    	dbScanItems.scan(enhancedClient); //dynamoDB sdk_v2 scan 데이터 취득.
     	
+    	serviceV2.queryTable2(enhancedClient); //dynamoDB sdk_v2 query 데이터 취득.
+    	serviceV2.queryTable(ddb) ; //dynamoDB sdk_v2 query 데이터 취득.	
     	
-//=================================================event test json으로 등록시-- ===========================================================    	
+//=================================================event test json으로 등록시-- ===========================================================  
+    	excuteV1();
 //    	// event Map에 저장
 //    	Map<String, String> eventMap = (Map<String, String>) event;
 //    	// Map을 MgMemberTable에 저장
@@ -111,6 +113,24 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
 		return "success!!" +  DYNAMODB_TABLE_NAME;
 
     }
+
+private void excuteV1() {
+	// TODO Auto-generated method stub
+	
+}
+
+private void excuteV2() {
+	// TODO Auto-generated method stub
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
     
 
     //MgClientTable에 등록할 데이터 생성

@@ -8,13 +8,13 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 @DynamoDBTable(tableName = "MG_CLIENT")
 public class MgClientTableV2 {
 	
-	public static String id;
-	public static ClientInfo client_info;
-	public static String created_at;
-	public static String updated_at;
-	public static String insert_user;
-	public static String updated_user;
-	public static int version;
+	public String id;
+	public ClientInfo client_info;
+	public String created_at;
+	public String updated_at;
+	public String insert_user;
+	public String updated_user;
+	public int version;
 
 	
 	@DynamoDBHashKey(attributeName = "id")

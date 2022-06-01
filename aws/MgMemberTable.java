@@ -13,16 +13,15 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 @DynamoDBTable(tableName = "MG_MEMBER")
 public class MgMemberTable {
 
-	public static String id;
-	public static String mg_name;
-	public static String birth_date;
-	public static String email_address;
-	public static String created_at;
-	public static String updated_at;
-	public static String insert_user;
-	public static String updated_user;
-	public static int version;
-
+	public String id;
+	public String mg_name;
+	public String birth_date;
+	public String email_address;
+	public String created_at;
+	public String updated_at;
+	public String insert_user;
+	public String updated_user;
+	public int version;
 
 	@DynamoDBHashKey(attributeName = "id")
 	public String getId() {

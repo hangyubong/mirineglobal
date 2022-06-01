@@ -13,6 +13,7 @@ import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.amazonaws.lambda.demo.guide.DynamoDBMapperQueryScanExample;
 import com.amazonaws.lambda.demo.handler.MgMemberHandler;
 import com.amazonaws.lambda.demo.table.MgMemberTable;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -20,6 +21,8 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDeleteExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.document.DeleteItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -27,6 +30,7 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.UpdateItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.api.BatchGetItemApi;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.BatchGetItemResult;
 import com.amazonaws.services.dynamodbv2.xspec.DeleteItemExpressionSpec;
 import com.amazonaws.lambda.demo.utils.DynamoDBUtils;
@@ -35,7 +39,11 @@ import com.amazonaws.lambda.demo.utils.DynamoDBUtils;
 
 public class MgMemberService {
 	static final Logger logger = LogManager.getLogger(MgMemberService.class);
-	private DynamoDBMapper dynamoDBMapper;
+	private DynamoDBMapper dynamoDBMapper;	
+    public static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
+    public static DynamoDB dynamoDB = new DynamoDB(client);
+
+    static String tableName = "MG_MEMBER";
 
 	public MgMemberService(AmazonDynamoDB client) {
 
@@ -135,7 +143,71 @@ public class MgMemberService {
 
 	}//END insertMember()	
 
-	
+    public void createItems() { //v1 - 1건 등록
+        Table table = dynamoDB.getTable(tableName);
+        
+//        LocalDateTime ldt = LocalDateTime.now(ZoneId.of("Asia/Tokyo"));
+        ZonedDateTime zdt = ZonedDateTime.now(ZoneId.of("UTC")); //LocalDateTime보다는 ZoneID를 쓰기때문에 ZonedDateTime쓰도록함.
+        DateTimeFormatter fomatter = DateTimeFormatter.ofPattern("yyyy/mm/dd HH:mm:ss");
+//        String nowDate = fomatter.format(ldt);
+        String nowDate2 = fomatter.format(zdt);
+        
+        try {
+
+            Item item = new Item().withPrimaryKey("id", "mg13").withString("mg_name", "Jeny")
+                .withString("birth_date", "1992/09/06")
+                .withString("email_address", "Jeny@gmail.com")
+                .withString("created_at", nowDate2)
+                .withString("updated_at", nowDate2)
+                .withString("insert_user", "insert-admin")
+                .withString("updated_user", "insert-admin")
+                .withNumber("version", 13);
+            table.putItem(item);
+
+            item = new Item().withPrimaryKey("id", "mg14").withString("mg_name", "clock")
+                    .withString("birth_date", "1987/12/26")
+                    .withString("email_address", "clock@gmail.com")
+                    .withString("created_at", nowDate2)
+                    .withString("updated_at", nowDate2)
+                    .withString("insert_user", "insert-admin")
+                    .withString("updated_user", "insert-admin")
+                    .withNumber("version", 14);
+                table.putItem(item);            
+
+        }
+        catch (Exception e) {
+            System.err.println("Create items failed.");
+            System.err.println(e.getMessage());
+            
+        }
+    }
+    
+    
+    public void testCRUDOperations() {//v1 - 1건 삭제 됨.
+    	
+    	MgMemberTable item = new MgMemberTable();
+        item.setId("mg15");
+
+        // Save the item (MgMember).
+        DynamoDBMapper mapper = new DynamoDBMapper(client);
+        mapper.save(item);
+
+        // Retrieve the updated item.
+        DynamoDBMapperConfig config = DynamoDBMapperConfig.builder()
+            .withConsistentReads(DynamoDBMapperConfig.ConsistentReads.CONSISTENT)
+        .build();
+        MgMemberTable updatedItem = mapper.load(MgMemberTable.class, "mg15", config);
+        
+        // Delete the item.
+        mapper.delete(updatedItem);
+
+        // Try to retrieve deleted item.
+        MgMemberTable deletedItem = mapper.load(MgMemberTable.class, updatedItem.getId(), config);
+        if (deletedItem == null) {
+            logger.info("success! delete!!");
+        }
+    }
+    
     public void batchSave() { //batchDelete 복수삭제 --수정 보완필요.
     	
         MgMemberTable item1 = new MgMemberTable();   
@@ -182,6 +254,72 @@ public class MgMemberService {
 		return mg;	
 	}
 
+    public void getMember() {
+    	try {
+		
+//    		DynamoDBMapper mapper = new DynamoDBMapper(client);
+
+    		
+    		//scan으로 취득
+//    		Map<String, AttributeValue> values = new HashMap<String, AttributeValue>();
+//    		values.put(":v1", new AttributeValue().withS("19"));
+//    		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression().withFilterExpression("begins_with(birth_date, :v1)")
+//    				.withExpressionAttributeValues(values);
+//    		List<MgMemberTable> result = dynamoDBMapper.scan(MgMemberTable.class, scanExpression);
+//    		
+//    		logger.info("birth? " + result.get(0).getBirth_date());
+//    		logger.info("result size ? " + result.size());
+    		
+    		//query로 취득--query취득은 partition key먼저 입력후 찾아야함
+//    		Map<String, AttributeValue> values = new HashMap<String, AttributeValue>();
+//    		values.put(":v1", new AttributeValue().withS("mg17")); //파티션 키의 키값
+//    		values.put(":v2", new AttributeValue().withS("mi"));  //위의 파티션키값에 속한 속성내에서 취득
+//    		DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
+//    				.withKeyConditionExpression("id = :v1") //파티션 키 = 별도로 담기위해 :v1 으로 뺌
+//					.withFilterExpression("begins_with(mg_name, :v2)")//어디서부터 찾을지. 
+//    				.withExpressionAttributeValues(values);//별도로 담은 변수 값을 넣어 찾음
+//    		List<MgMemberTable> result = dynamoDBMapper.query(MgMemberTable.class, queryExpression);
+//    		
+//    		logger.info("mg_name? " + result.get(0).getMgName());//get(0)은 목록의 첫번째 데이터를 가리킴 
+//    		logger.info("result size ? " + result.size());//결과가 몇개인지.
+
+
+    		//Global Secondary Index -scan으로 취득
+//    		Map<String, AttributeValue> values = new HashMap<String, AttributeValue>();
+//    		values.put(":v1", new AttributeValue().withS("1990"));
+//    		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+//    				.withIndexName("MG_MEMBER_GSI_1")
+//    				.withFilterExpression("birth_date >= :v1")
+//    				.withExpressionAttributeValues(values);
+//    		List<MgMemberTable> result = dynamoDBMapper.scan(MgMemberTable.class, scanExpression);
+//    		
+////    		logger.info("birth_date? " + result.get(0).getBirth_date());
+//    		logger.info("birth_date? " + result.get(12).getBirth_date());
+//    		logger.info("result size ? " + result.size());   		
+
+    		//Global Secondary Index - query로 취득--query취득은 partition key로 해당정보내에서만 취득가능
+    		HashMap<String, AttributeValue> values = new HashMap<String, AttributeValue>();
+    		values.put(":v1",  new AttributeValue().withS("miura"));
+    		values.put(":v2",  new AttributeValue().withS("19"));
+
+    		DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
+    		    .withIndexName("MG_MEMBER_GSI_1")
+    		    .withConsistentRead(false)
+    		    .withKeyConditionExpression("mg_name = :v1 and begins_with(birth_date, :v2)")
+    		    .withExpressionAttributeValues(values);
+
+    		List<MgMemberTable> result =  dynamoDBMapper.query(MgMemberTable.class, queryExpression);
+    		logger.info("mg_name? " + result.get(0).getMgName());//get(0)은 목록의 첫번째 데이터를 가리킴 
+    		logger.info("birth_date? " + result.get(0).getBirth_date());//get(0)은 목록의 첫번째 데이터를 가리킴 
+    		logger.info("result size ? " + result.size());//결과가 몇개인지.
+
+
+        }
+        catch (Throwable t) {
+            System.err.println("Error running the DynamoDBMapperQueryScanExample: " + t);
+            t.printStackTrace();
+        }
+    }
 	
 
 	private String getNowTime() { //등록 및 갱신 현재시간 메소드
