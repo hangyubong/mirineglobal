@@ -10,6 +10,7 @@ import com.amazonaws.lambda.demo.table.MgMemberTable;
 import com.amazonaws.lambda.demo.table.MgMemberTableV2;
 import com.amazonaws.lambda.demo.table.BaseTable;
 import com.amazonaws.lambda.demo.table.MgClientTable;
+import com.amazonaws.lambda.demo.table.MgClientTableV2;
 
 public class DynamoDBUtils {
 
@@ -29,6 +30,20 @@ public class DynamoDBUtils {
 	}
 	
 	//===========================================================================================================
+	public static void insertCommonItemV2(MgClientTableV2 insertMember) {
+		insertMember.setCreated_at(getTransactionTimeNow());
+		insertMember.setUpdated_at(getTransactionTimeNow());
+		insertMember.setInsert_user("insert-user");
+		insertMember.setUpdated_user("insert-user");
+		insertMember.setVersion(0);
+	}
+	
+	public static void updateCommonItemV2(MgClientTableV2 updateMember) {
+		updateMember.setUpdated_at(getTransactionTimeNow());
+		updateMember.setUpdated_at("update-user");
+		updateMember.setVersion(updateMember.getVersion() + 1);
+	}
+	
 	public static void insertCommonItemV2(MgMemberTableV2 insertMember) {
 		insertMember.setCreated_at(getTransactionTimeNow());
 		insertMember.setUpdated_at(getTransactionTimeNow());

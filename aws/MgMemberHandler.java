@@ -33,6 +33,7 @@ import com.amazonaws.lambda.demo.guide.DynamoDBMapperQueryScanExample;
 import com.amazonaws.lambda.demo.service.MgMemberService;
 import com.amazonaws.lambda.demo.service.MgMemberServiceV2;
 import com.amazonaws.lambda.demo.service.MgClientService;
+import com.amazonaws.lambda.demo.service.MgClientService2;
 import com.amazonaws.lambda.demo.table.ClientInfo;
 import com.amazonaws.lambda.demo.table.MgClientTable;
 import com.amazonaws.lambda.demo.table.MgMemberTable;
@@ -40,20 +41,20 @@ import com.amazonaws.lambda.demo.table.MgMemberTable;
 public class MgMemberHandler implements RequestHandler<Object, String> {
 	DynamoDbClient ddb;
 	static final Logger logger = LogManager.getLogger(MgMemberHandler.class);
-//	private static final DynamoDbEnhancedClient DynamoDbEnhancedClient = null;
     private DynamoDB dynamoDb;
     private AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build();
     private DynamoDBMapper dynamoDBMapper; 
     private MgMemberService service = new MgMemberService(client);
     private MgMemberServiceV2 serviceV2 = new MgMemberServiceV2();
-//    private MgClientService clientService = new MgClientService(client);
+    private MgClientService clientService = new MgClientService(client);
+    private MgClientService2 clientService2 = new MgClientService2();
 	private MgMemberServiceV2 dbScanItems = new MgMemberServiceV2();
 	private Query query = new Query();
     
     private EnhancedPutItem enhancedPutItem; //dynamoDB sdk_v2 
     
-    private String DYNAMODB_TABLE_NAME = "MG_MEMBER";
-//    private String DYNAMODB_TABLE_NAME = "MG_CLIENT";
+//    private String DYNAMODB_TABLE_NAME = "MG_MEMBER";
+    private String DYNAMODB_TABLE_NAME = "MG_CLIENT";
    
     public String handleRequest(Object event, Context context) {
     	DynamoDbClient ddb = DynamoDbClient.builder().region(software.amazon.awssdk.regions.Region.AP_NORTHEAST_1).build();
@@ -61,26 +62,38 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
     				.build();
     	
     	excuteV2();
-    	serviceV2.putRecord(enhancedClient); //dynamoDB sdk_v2 1건 등록.
-    	serviceV2.deleteDymamoDBItem(ddb);//dynamoDB sdk_v2 1건 삭제.
-    	serviceV2.updateTableItem(ddb);//dynamoDB sdk_v2 1건 업데이트.
+    	//================MG_CLIENT / SDK V2===================================
+//    	clientService2.putClient(); //1건 등록
+//    	clientService2.putClients(enhancedClient); //복수 등록
+//    	clientService2.createClients(enhancedClient, event); //복수 등록 - json형식 / for문 
+//    	clientService2.deleteClient(ddb); //1건 삭제
+//    	clientService2.updateTableClientV2(ddb); //1건 업데이트
+//    	clientService2.scanClient(enhancedClient); //scan
+    	clientService2.queryCliient(enhancedClient); //query
     	
-    	serviceV2.createMembers(event); //dynamoDB sdk_v2 복수 등록. -- for문.
-    	serviceV2.putBatchRecords(enhancedClient); //dynamoDB sdk_v2 복수 등록.
-    	serviceV2.deleteBatchRecords(enhancedClient);//dynamoDB sdk_v2 복수 삭제.
     	
-    	service.getMember(); //Query 및 Scan으로 데이터 취득. / global index로 데이터 취득.	
-//    	logger.info(event.toString(), service.getMember());
+    	//================MG_MEMBER / SDK V2===================================
+//    	serviceV2.putMember(enhancedClient); //dynamoDB sdk_v2 1건 등록.
+//    	serviceV2.deleteDymamoDBItem(ddb);//dynamoDB sdk_v2 1건 삭제.
+//    	serviceV2.updateTableItem(ddb);//dynamoDB sdk_v2 1건 업데이트.
+//    	
+//    	serviceV2.createMembers(event); //dynamoDB sdk_v2 복수 등록. -- for문.
+//    	serviceV2.putBatchRecords(enhancedClient); //dynamoDB sdk_v2 복수 등록.
+//    	serviceV2.deleteBatchRecords(enhancedClient);//dynamoDB sdk_v2 복수 삭제.
 
-
-    	dbScanItems.scanItems(ddb); //dynamoDB sdk_v2 scan 데이터 취득.
-    	dbScanItems.scan(enhancedClient); //dynamoDB sdk_v2 scan 데이터 취득.
-    	
-    	serviceV2.queryTable2(enhancedClient); //dynamoDB sdk_v2 query 데이터 취득.
-    	serviceV2.queryTable(ddb) ; //dynamoDB sdk_v2 query 데이터 취득.	
+//    	dbScanItems.scanItems(ddb); //dynamoDB sdk_v2 scan 데이터 취득.
+//    	dbScanItems.scan(enhancedClient); //dynamoDB sdk_v2 scan 데이터 취득.
+//    	
+//    	serviceV2.queryTable2(enhancedClient); //dynamoDB sdk_v2 query 데이터 취득.
+//    	serviceV2.queryTable(ddb) ; //dynamoDB sdk_v2 query 데이터 취득.	
+//    	//================END MG_MEMBER / SDK V2===================================
     	
 //=================================================event test json으로 등록시-- ===========================================================  
     	excuteV1();
+//    	service.getMember(); //Query 및 Scan으로 데이터 취득. / global index로 데이터 취득.	
+//    	logger.info(event.toString(), service.getMember());    	
+    	
+    	
 //    	// event Map에 저장
 //    	Map<String, String> eventMap = (Map<String, String>) event;
 //    	// Map을 MgMemberTable에 저장
@@ -122,13 +135,7 @@ private void excuteV1() {
 private void excuteV2() {
 	// TODO Auto-generated method stub
 	
-	
-	
-	
-	
-	
-	
-	
+
 	
 }
     

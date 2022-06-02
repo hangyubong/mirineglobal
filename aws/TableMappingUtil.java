@@ -1,7 +1,9 @@
 package com.amazonaws.lambda.demo.utils;
 
 import com.amazonaws.util.StringUtils;
-
+import com.amazonaws.lambda.demo.table.ClientInfo2;
+import com.amazonaws.lambda.demo.table.MgClient;
+import com.amazonaws.lambda.demo.table.MgClientTableV2;
 import com.amazonaws.lambda.demo.table.MgMember;
 import com.amazonaws.lambda.demo.table.MgMemberTableV2;
 
@@ -24,6 +26,29 @@ public class TableMappingUtil {
 		
 		if (!StringUtils.isNullOrEmpty(member.getEmailAddress())) {
 			result.setEmail_address(member.getEmailAddress());
+		}
+
+		return result;
+	}
+	
+	public static MgClientTableV2 clientToMgClientTable(MgClient mgClient) {
+		MgClientTableV2 result = new MgClientTableV2();
+		ClientInfo2 result2 = new ClientInfo2();
+
+		if (!StringUtils.isNullOrEmpty(mgClient.getId())) {
+			result.setId(mgClient.getId());
+		}
+
+		if (!StringUtils.isNullOrEmpty(mgClient.getAddress())) {
+			result2.setAddress(mgClient.getAddress());
+		}
+		
+		if (!StringUtils.isNullOrEmpty(mgClient.getEmail_address())) {
+			result2.setEmail_address(mgClient.getEmail_address());
+		}
+		
+		if (!StringUtils.isNullOrEmpty(mgClient.getFull_name())) {
+			result2.setFullName(mgClient.getFull_name());
 		}
 
 		return result;
