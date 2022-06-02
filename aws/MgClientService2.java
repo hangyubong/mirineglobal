@@ -185,6 +185,7 @@ public class MgClientService2 {
 
 			// input 데이터를 모델에 매핑
 			Map<String, String> m = (Map<String, String>) input;
+			logger.info(m.toString());
 			// DynamoDb table 생성
 			// TODO 아래와 같이 table을 생성하면 Table모델의 변수명이 그대로 매핑되어 등록된다.
 //			DynamoDbTable<MgMemberTableV2> mgMemberTable = enhancedClient.table("MG_MEMBER",
@@ -197,13 +198,21 @@ public class MgClientService2 {
 			int num = 101;
 			for (int i = 0; i < 5; i++) {
 				// 등록할 데이터 생성
-				MgClient mgClient = new MgClient(m.get(ConstantsClient.ID), m.get(ConstantsClient.ADDRESS),
-						m.get(ConstantsClient.EMAIL_ADDRESS), m.get(ConstantsClient.FULL_NAME));
+				Map<String, String> clientInfo = new HashMap<>();
+//				clientInfo.put("id", "cl1");
+				clientInfo.put("address", "komagome");
+				clientInfo.put("email_address", "mg@sample.com");
+				clientInfo.put("full_name", "global");
+				
+				
+				
+//				MgClient mgClient = new MgClient(m.get(ConstantsClient.ID), m.get(ConstantsClient.ADDRESS),
+//						m.get(ConstantsClient.EMAIL_ADDRESS), m.get(ConstantsClient.FULL_NAME));
 				// string 으로 변환하여 id저장
 				String id = m.get(Constants.ID).substring(0, m.get(Constants.ID).length() - 1) + String.valueOf(num);
 				// 복수데이터 생성하기 위해 id만 바꿔서 리스트 생성
-				mgClient.setId(id);
-				clients.add(mgClient);
+				((MgClient) clientInfo).setId(id);
+				clients.add((MgClient) clientInfo);
 				// id += 1
 				num++;
 			}
