@@ -1,4 +1,8 @@
 package com.amazonaws.lambda.demo.service;
+/*
+ * --Code Samle guilde =
+ * https://docs.aws.amazon.com/ko_kr/code-samples/latest/catalog/code-catalog-javav2-example_code-dynamodb.html
+ */
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -8,9 +12,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 
 import com.amazonaws.lambda.demo.table.ClientInfo;
 import com.amazonaws.lambda.demo.table.ClientInfo2;
@@ -39,6 +45,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValueUpdate;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.DeleteRequest;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
@@ -46,7 +53,7 @@ public class MgClientService2 {
 
 	static final Logger logger = LogManager.getLogger(MgClientService2.class);
 	private DynamoDbEnhancedClient enhancedClient;
-	private DynamoDbClient ddb;
+//	private DynamoDbClient ddb;
 
 //	private final TableSchema<MgClientTableV2> TABLE_SCHEMA = TableSchema.builder(MgClientTableV2.class)
 //			.newItemSupplier(MgClientTableV2::new)
@@ -184,50 +191,42 @@ public class MgClientService2 {
 		try {
 
 			// input 데이터를 모델에 매핑
+//			Map<String, Object> m = (Map<String, Object>) input;
 			Map<String, String> m = (Map<String, String>) input;
+			
+			
+			logger.info("m.get(Constants.ID)? " + m.get(Constants.ID));
+			logger.info("m.get(\"client_info\")? " + m.get("client_info"));
 			logger.info(m.toString());
+			
 			// DynamoDb table 생성
 			// TODO 아래와 같이 table을 생성하면 Table모델의 변수명이 그대로 매핑되어 등록된다.
 //			DynamoDbTable<MgMemberTableV2> mgMemberTable = enhancedClient.table("MG_MEMBER",
 //					TableSchema.fromBean(MgMemberTableV2.class));
-			// TODO 따라서, 아래와같이 TABLE_SCHEMA를 생성해서 테이블 AttributeName, AttributeValue를 지정해 줄
-			// 필요가 있다.
+			// TODO 따라서, 아래와같이 TABLE_SCHEMA를 생성해서 테이블 AttributeName, AttributeValue를 지정해 줄 필요가 있다.
+			 
 			DynamoDbTable<MgClientTableV2> mgClientTable = enhancedClient.table("MG_CLIENT", TableSchema.fromBean(MgClientTableV2.class));
-
-			List<MgClient> clients = new ArrayList<>();
+				
+				Map<String,String> mgClient = new HashMap<>();
+				mgClient.put(m.get(ConstantsClient.ADDRESS), "komagome");
+				mgClient.put(m.get(ConstantsClient.EMAIL_ADDRESS), "mg@sample.com");
+				mgClient.put(m.get(ConstantsClient.FULL_NAME), "global");
+				
+			List<MgClientTableV2> insertClients = new ArrayList<>();
+			
 			int num = 101;
 			for (int i = 0; i < 5; i++) {
-				// 등록할 데이터 생성
-				Map<String, String> clientInfo = new HashMap<>();
-//				clientInfo.put("id", "cl1");
-				clientInfo.put("address", "komagome");
-				clientInfo.put("email_address", "mg@sample.com");
-				clientInfo.put("full_name", "global");
-				
-				
-				
-//				MgClient mgClient = new MgClient(m.get(ConstantsClient.ID), m.get(ConstantsClient.ADDRESS),
-//						m.get(ConstantsClient.EMAIL_ADDRESS), m.get(ConstantsClient.FULL_NAME));
-				// string 으로 변환하여 id저장
-				String id = m.get(Constants.ID).substring(0, m.get(Constants.ID).length() - 1) + String.valueOf(num);
-				// 복수데이터 생성하기 위해 id만 바꿔서 리스트 생성
-				((MgClient) clientInfo).setId(id);
-				clients.add((MgClient) clientInfo);
-				// id += 1
-				num++;
-			}
-
-			// dynamoDB Table 매핑
-			List<MgClientTableV2> insertClients = new ArrayList<>();
-			for (MgClient mem : clients) {
 				// 1건씩 매핑하여 MgMemberTable을 생성해준다음
-				MgClientTableV2 insertMember = TableMappingUtil.clientToMgClientTable(mem);
+				String id = m.get(Constants.ID).substring(0, m.get(Constants.ID).length() - 1) + String.valueOf(num);
+				MgClientTableV2 insertMember = TableMappingUtil.clientMapToMgClientTable(id , mgClient);
 				DynamoDBUtils.insertCommonItemV2(insertMember);
 				// 등록 실행전 데이터 확인
 				logger.info("등록할 데이터 정보  mgMember.toString() : " + insertMember.toString());
 				// 리스트에 add하여 생성
 				insertClients.add(insertMember);
+				num++;
 			}
+			
 			BatchWriteItemEnhancedRequest batchWriteItemEnhancedRequest = BatchWriteItemEnhancedRequest.builder()
 					.writeBatches(WriteBatch.builder(MgClientTableV2.class).mappedTableResource(mgClientTable)
 							.addPutItem(r -> r.item(insertClients.get(0))).addPutItem(r -> r.item(insertClients.get(1)))
@@ -238,63 +237,133 @@ public class MgClientService2 {
 			// Add these two items to the table.
 			enhancedClient.batchWriteItem(batchWriteItemEnhancedRequest);
 			logger.info("batchWriteItem() end");
+			
 			/**
 			 * 복수건 확인
 			 */
 			// 등록된 데이터 확인
 
 			// close()
-			ddb.close();
+//			ddb.close(); //handler에 있는걸로 사용하고있는 경우 여기에서 닫을게없음
 		} catch (DynamoDbException e) {
 			logger.error(e.getMessage());
 		}
 
 	}
-	
-	// 1건 삭제
-	public void deleteClient(DynamoDbClient ddb) {
+
+	/* 1건 삭제 --***정렬키가 있는 테이블의경우 아래와같이 sortkey값과 벨류까지 제공해야지만 삭제가 가능.
+		\>기본키값만 제공하거나 sortkey값에 벨류값이 일치하지않을시 The provided key element does not match the schema
+	    \>(제공된 키 요소가 스키마와 일치하지 않습니다.)에러 발생에 주의.
+		\>기본키만 있는 테이블의경우 파티션키와 벨류값만 명시하면 쉽게 삭제처리 됨. */
+	public void deleteClient(DynamoDbClient ddb ) {
+		String tableName = "MG_CLIENT";
+		String key = "id";
+		String keyVal = "cl101";
+		String sortkey = "created_at";
+		String sortkeyVal = "2022-06-03T00:50:31Z";
+
+		HashMap<String, AttributeValue> keyToGet = new HashMap<>();
+		keyToGet.put(key, AttributeValue.builder().s(keyVal).build());
+		keyToGet.put(sortkey, AttributeValue.builder().s(sortkeyVal).build());
+
+		DeleteItemRequest deleteReq = DeleteItemRequest.builder().tableName(tableName).key(keyToGet).build();
+
 		try {
-			//tableName(테이블명), key(파티션키), keyVal(키 벨류값) 필드 선언
-			String tableName = "MG_CLIENT";
-			String key = "id";
-			String keyVal = "1";
-			
-			//hashMap<String. AttributeValue>객체생성 
-			HashMap<String, AttributeValue> keyToGet = new HashMap<>();
-			//hashMap에 담은 변수에 put하여 key와 keyVal를 담아서 빌드업
-			keyToGet.put(key, AttributeValue.builder()
-					.s(keyVal)
-					.build());
-			//DeleteItemRequest로 삭제 요청
-			DeleteItemRequest deleteReq = DeleteItemRequest.builder().tableName(tableName).key(keyToGet).build();
-			//요청한 변수를 DynamoDbClient.deleteItem()에 담아처 삭제 처리
 			ddb.deleteItem(deleteReq);
 		} catch (DynamoDbException e) {
-			logger.info(e.getMessage());
+
 		}
-		ddb.close();
 	}
 
+	// 1건 조회(?)
+	public void getClient(DynamoDbClient ddb ) {
+		String tableName = "MG_CLIENT";
+		String key = "id";
+		String keyVal = "client2";
+		String sortkey = "created_at";
+		String sortkeyVal = "2022/06/02 05:29:34";
+        HashMap<String,AttributeValue> keyToGet = new HashMap<String,AttributeValue>();
+
+        keyToGet.put(key, AttributeValue.builder().s(keyVal).build());
+        keyToGet.put(sortkey, AttributeValue.builder().s(sortkeyVal).build());
+
+        GetItemRequest request = GetItemRequest.builder()
+                .key(keyToGet)
+                .tableName(tableName)
+                .build();
+
+        try {
+            Map<String,AttributeValue> returnedItem = ddb.getItem(request).item();
+
+            if (returnedItem != null) {
+                Set<String> keys = returnedItem.keySet();
+                System.out.println("Amazon DynamoDB table attributes: \n");
+
+                for (String key1 : keys) {
+                    System.out.format("%s: %s\n", key1, returnedItem.get(key1).toString());
+                }
+            } else {
+                System.out.format("No item found with the key %s!\n", key);
+            }
+        } catch (DynamoDbException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+		
+	}
+	
 	// 복수 삭제
-	
-	// dynamoDB sdk_v2 복수 등록 (2 - json형식으로 등록하기)
-	
-	//scan으로 전체데이터 취득
-	
-	//query로 기본키값에 대한 정보 취득
-	
-	
+	/*주의사항 : MG_CLIENT 테이블은 SortKey가 있으므로 항시 sortkey가 있는 테이블은 sortkey도 제공해야 처리가되므로
+	 * \>sortkey의 벨류값을 정확히 일치시켜 넣어줘야 정삭삭제 처리된다.*/
+	public final void deleteBatchClients(DynamoDbEnhancedClient enhancedClient) {
+
+		
+		//테이블 enhancedClient연동
+		DynamoDbTable<MgClientTableV2> mgClientTable = enhancedClient.table("MG_CLIENT", TableSchema.fromBean(MgClientTableV2.class));
+//		DynamoDbTable<MgClientTableV2> mgClientTable = enhancedClient.table("MG_CLIENT", TABLE_SCHEMA);
+		
+		//복수등록따른 리스트 생성
+		List<MgClientTableV2> mgClientTableList = new ArrayList<MgClientTableV2>();
+		
+		//삭제1
+		MgClientTableV2 mgClientTable1 = new MgClientTableV2();	//테이블 객체 생성
+		mgClientTable1.setId("client1"); // set 파티션키
+		mgClientTable1.setCreated_at("2022/06/02 04:39:24"); //set 정렬키
+		mgClientTableList.add(mgClientTable1); //MgClientTableV2 테이블 리스트에 set한 정보를 넣어줌
+		
+		//삭제2
+		MgClientTableV2 mgClientTable2 = new MgClientTableV2();//테이블 객체 생성
+		mgClientTable2.setId("client1");//set 파티션키
+		mgClientTable2.setCreated_at("2022/06/02 05:04:14");//set 정렬키
+		mgClientTableList.add(mgClientTable2); //MgClientTableV2 테이블 리스트에 set한 정보를 넣어줌
+		
+		//BatchWriteItemEnhancedRequest를 이용한 복수 삭제 처리.
+		BatchWriteItemEnhancedRequest batchWriteItemEnhancedRequest = BatchWriteItemEnhancedRequest.builder()
+				.writeBatches(WriteBatch.builder(MgClientTableV2.class).mappedTableResource(mgClientTable)
+						.addDeleteItem(mgClientTable1)
+						.addDeleteItem(mgClientTable2)
+						.build())
+				.build();
+		enhancedClient.batchWriteItem((batchWriteItemEnhancedRequest));
+		logger.info(mgClientTableList.get(0).id + " 삭제!!");
+		logger.info(mgClientTableList.get(1).id + " 삭제!!");
+		
+	}	
 	
 	// dynamoDB sdk_v2 1건 업데이트
-	public void updateTableClientV2(DynamoDbClient ddb) {
+	/*sortkey가 있는테이블은 기본키와같이 sortkey도 제공해야 처리가능*/
+	public void updateTableClientV(DynamoDbClient ddb) {
 		String tableName = "MG_CLIENT";
 		String key = "id";
 		String keyVal = "mg";
+		String sortkey = "created_at";
+		String sortkeyVal = "2022/05/22 15:21:38";
 		String name = "updated_user";
 		String updateVal = "updated-admin";
 
 		HashMap<String, AttributeValue> itemKey = new HashMap<>();
-		itemKey.put(key, AttributeValue.builder().s(keyVal).build());
+		itemKey.put(key, AttributeValue.builder().s(keyVal).build()); //파티션키 체공
+		itemKey.put(sortkey, AttributeValue.builder().s(sortkeyVal).build()); //정렬키 체공
 		HashMap<String, AttributeValueUpdate> updatedValues = new HashMap<>();
 
 		updatedValues.put(name, AttributeValueUpdate.builder().value(AttributeValue.builder().s(updateVal).build())

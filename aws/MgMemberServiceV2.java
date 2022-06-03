@@ -35,6 +35,7 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValueUpdate;
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
@@ -42,7 +43,6 @@ import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
-/*dynamoDB SDK_v2 scan사용 데이터 취득*/
 public class MgMemberServiceV2 {
 	
 	final Logger logger = LogManager.getLogger(EnhancedPutItem.class);
@@ -50,6 +50,9 @@ public class MgMemberServiceV2 {
 	private DynamoDbEnhancedClient enhancedClient;
 	private DynamoDbClient ddb;
 
+	//--스키마정의. dynamoDB SDK v2에서는 아래와같이 테이블 스키마정의를 선언해놓고 사용하는것이 바람직하다.
+	//	\> 선언하지않고도 DynamoDbTable<MgMemberTableV2> memberTable = enhancedClient.table("MG_MEMBER", TableSchema.fromBean(MgMemberTableV2.class));
+	//	\> 이런식으로 fromBean을 통해 데이터 등록이 가능하나, **속성 선언된 필드명 그대로 등록이되기때문에 선언명에 따라 테이블에 속성항목이 추가가 될수있으니 주의.**
 	private final TableSchema<MgMemberTableV2> TABLE_SCHEMA = TableSchema.builder(MgMemberTableV2.class)
 			.newItemSupplier(MgMemberTableV2::new)
 			.addAttribute(String.class,
@@ -79,14 +82,14 @@ public class MgMemberServiceV2 {
 					.setter(MgMemberTableV2::setVersion))
 			.build();
 
-	public MgMemberServiceV2() {
+	public MgMemberServiceV2() { //핸들러에서 사용시에는 없어도됨
 		ddb = DynamoDbClient.builder().region(software.amazon.awssdk.regions.Region.AP_NORTHEAST_1).build();
 		enhancedClient = software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient.builder().dynamoDbClient(ddb)
 				.build();
 	}
 
 	// dynamoDB sdk_v2 1건 등록
-	public void putRecord(DynamoDbEnhancedClient enhancedClient) {
+	public void putMember(DynamoDbEnhancedClient enhancedClient) {
 
 		try {
 			
@@ -94,35 +97,33 @@ public class MgMemberServiceV2 {
 			// \ ->v2에서는 TableSchema<>를 작성해주고 사용해야한다. 만약 작성하지않고사용한다면 위 주석 내용으로 데이터등록도 가능하지만 선언되있는 변수이름으로 등록되어 속성키값항목이 추가될수있으니
 			// \ -->v2에서는 TableSchema<>를 작성하고 아래와같이 사용하자.
 			DynamoDbTable<MgMemberTableV2> mgMemberTable = enhancedClient.table("MG_MEMBER", TABLE_SCHEMA);
-
 			// Populate the Table.
-			MgMemberTableV2 MgMemberRecord = new MgMemberTableV2();
+			MgMemberTableV2 MgMember = new MgMemberTableV2();
 
-			MgMemberRecord.setId("mg16");
-			MgMemberRecord.setMgName("hana");
-			MgMemberRecord.setBirth_date("1999/11/02");
-			MgMemberRecord.setEmail_address("hana@gmail.com");
-			MgMemberRecord.setCreated_at(getNowTime());
-			MgMemberRecord.setUpdated_at(getNowTime());
-			MgMemberRecord.setInsert_user("insert-admin");
-			MgMemberRecord.setUpdated_user("insert-admin");
-			MgMemberRecord.setVersion(0);
+			MgMember.setId("mg16");
+			MgMember.setMgName("hana");
+			MgMember.setBirth_date("1999/11/02");
+			MgMember.setEmail_address("hana@gmail.com");
+			MgMember.setCreated_at(getNowTime());
+			MgMember.setUpdated_at(getNowTime());
+			MgMember.setInsert_user("insert-admin");
+			MgMember.setUpdated_user("insert-admin");
+			MgMember.setVersion(0);
 			// Put the customer data into an Amazon DynamoDB table.
-			mgMemberTable.putItem(MgMemberRecord);
-			logger.info(MgMemberRecord.getMgName().toString());
+			mgMemberTable.putItem(MgMember);
+			logger.info(MgMember.getMgName().toString());
 
 			// Put the customer data into an Amazon DynamoDB table.
-			mgMemberTable.putItem(MgMemberRecord);
+			mgMemberTable.putItem(MgMember);
 
 		} catch (DynamoDbException e) {
-
+			logger.error(e.getMessage());
 		}
 
 	}
 
 	// dynamoDB sdk_v2 복수 등록
-	public final void putBatchRecords(DynamoDbEnhancedClient enhancedClient) {// 복수등록. -- 가이드형식으로 처리시에는 중복키값이 발생됨.
-
+	public final void putBatchRecords(DynamoDbEnhancedClient enhancedClient) {//
 		/*
 		 * --Code Samle guilde =
 		 * https://docs.aws.amazon.com/ko_kr/code-samples/latest/catalog/javav2-dynamodb
@@ -193,85 +194,12 @@ public class MgMemberServiceV2 {
 
 	}
 	
-	
-	// dynamoDB sdk_v2 복수 삭제
-	public final void deleteBatchRecords(DynamoDbEnhancedClient enhancedClient) {// 복수등록. -- 가이드형식으로 처리시에는 중복키값이 발생됨.
-		/*
-		 * --Code Samle guilde =
-		 * https://docs.aws.amazon.com/ko_kr/code-samples/latest/catalog/javav2-dynamodb
-		 */
-
-		DynamoDbTable<MgMemberTableV2> mgMemberTable = enhancedClient.table("MG_MEMBER", TABLE_SCHEMA);
-		List<MgMemberTableV2> members = new ArrayList<MgMemberTableV2>();
-		MgMemberTableV2 mg15 = new MgMemberTableV2();
-		mg15.setId("mg15");
-		mg15.setMgName("rara");
-		mg15.setBirth_date("1999/11/02");
-		mg15.setEmail_address("rara@gmail.com");
-		mg15.setCreated_at(getNowTime());
-		mg15.setUpdated_at(getNowTime());
-		mg15.setInsert_user("insert-admin");
-		mg15.setUpdated_user("insert-admin");
-		mg15.setVersion(0);
-		members.add(mg15);
-
-		MgMemberTableV2 mg16 = new MgMemberTableV2();
-		mg16.setId("mg16");
-		mg16.setMgName("hana");
-		mg16.setBirth_date("1999/11/02");
-		mg16.setEmail_address("hana@gmail.com");
-		mg16.setCreated_at(getNowTime());
-		mg16.setUpdated_at(getNowTime());
-		mg16.setInsert_user("insert-admin");
-		mg16.setUpdated_user("insert-admin");
-		mg16.setVersion(0);
-		members.add(mg16);
-		
-		MgMemberTableV2 mg17 = new MgMemberTableV2();
-		mg17.setId("mg17");
-		mg17.setMgName("hana");
-		mg17.setBirth_date("1999/11/02");
-		mg17.setEmail_address("hana@gmail.com");
-		mg17.setCreated_at(getNowTime());
-		mg17.setUpdated_at(getNowTime());
-		mg17.setInsert_user("insert-admin");
-		mg17.setUpdated_user("insert-admin");
-		mg17.setVersion(0);
-		members.add(mg17);
-		
-		MgMemberTableV2 mg18 = new MgMemberTableV2();
-		mg18.setId("mg18");
-		mg18.setMgName("hana");
-		mg18.setBirth_date("1999/11/02");
-		mg18.setEmail_address("hana@gmail.com");
-		mg18.setCreated_at(getNowTime());
-		mg18.setUpdated_at(getNowTime());
-		mg18.setInsert_user("insert-admin");
-		mg18.setUpdated_user("insert-admin");
-		mg18.setVersion(0);
-		members.add(mg18);
-
-		BatchWriteItemEnhancedRequest batchWriteItemEnhancedRequest = BatchWriteItemEnhancedRequest.builder()
-				.writeBatches(WriteBatch.builder(MgMemberTableV2.class).mappedTableResource(mgMemberTable)
-						.addDeleteItem(mg15)
-						.addDeleteItem(mg16)
-						.addDeleteItem(mg17)
-						.addDeleteItem(mg18).build())
-				.build();
-		enhancedClient.batchWriteItem((batchWriteItemEnhancedRequest));
-		logger.info(members.get(0).id + " 삭제!!");
-		logger.info(members.get(1).id + " 삭제!!");
-		logger.info(members.get(2).id + " 삭제!!");
-		logger.info(members.get(3).id + " 삭제!!");
-
-	}	
-	
-	
-
 	/**
 	 * 복수건 등록
 	 * 
 	 * @param input
+	 * ***Map에 input으로 담아서 처리하기때문에 등록할데이터는 json작성필요. Map에 input없이 쓰게되면 담아주지못하므로 nullpoint에러 발생됨에 주의.
+	 * \>람다 event test르 등록사용시에 handler에서 복수건 등록 메서드에 event를 받아서 처리해주어야 등록가능. 
 	 */
 
 	public void createMembers(Object input) { //dynamoDB sdk_v2 복수 등록. -- for문.
@@ -326,7 +254,7 @@ public class MgMemberServiceV2 {
 			/**
 			 * 복수건 확인
 			 */
-			// TODO 등록된 데이터 확인
+			// 등록된 데이터 확인
 
 			// close()
 			ddb.close();
@@ -335,12 +263,47 @@ public class MgMemberServiceV2 {
 		}
 
 	}
+	
+	
+	// dynamoDB sdk_v2 복수 삭제
+	/*기본키와 키벨류값을 찾아서 각각 생성된 테이블 객체에 set을 해준후 리스트에 각각 넣어 삭제처리
+	 * \>>>(*중요*)정렬키가 있는 테이블의 경우에는 정렬키도 같이 제공해야 삭제처리가 가능하다*/
+	public final void deleteBatchMembers(DynamoDbEnhancedClient enhancedClient) {
+		/*
+		 * --Code Samle guilde =
+		 * https://docs.aws.amazon.com/ko_kr/code-samples/latest/catalog/javav2-dynamodb
+		 */
 
-	// dynamoDB sdk_v2 -- delete 1건 삭제
+		DynamoDbTable<MgMemberTableV2> mgMemberTable = enhancedClient.table("MG_MEMBER", TABLE_SCHEMA);
+		List<MgMemberTableV2> members = new ArrayList<MgMemberTableV2>();
+		MgMemberTableV2 member1 = new MgMemberTableV2();
+		member1.setId("j1101");
+		members.add(member1);
+
+		MgMemberTableV2 member2 = new MgMemberTableV2();
+		member2.setId("j1102");
+		members.add(member2);
+
+		BatchWriteItemEnhancedRequest batchWriteItemEnhancedRequest = BatchWriteItemEnhancedRequest.builder()
+				.writeBatches(WriteBatch.builder(MgMemberTableV2.class).mappedTableResource(mgMemberTable)
+						.addDeleteItem(member1)
+						.addDeleteItem(member2).build())
+				.build();
+		enhancedClient.batchWriteItem((batchWriteItemEnhancedRequest));
+		logger.info(members.get(0).id + " 삭제!!");
+		logger.info(members.get(1).id + " 삭제!!");
+		
+	}	
+	
+	
+
+
+
+	// 1건 삭제 (방법1)
 	public void deleteDymamoDBItem(DynamoDbClient ddb) {
 		String tableName = "MG_MEMBER";
 		String key = "id";
-		String keyVal = "mg00";
+		String keyVal = "mg16";
 
 		HashMap<String, AttributeValue> keyToGet = new HashMap<>();
 		keyToGet.put(key, AttributeValue.builder().s(keyVal).build());
@@ -352,6 +315,41 @@ public class MgMemberServiceV2 {
 		} catch (DynamoDbException e) {
 
 		}
+	}
+	
+	// 1건 삭제 (방법2) --**오류는없으나 삭제처리가 되지않음
+	public void deleteMember(DynamoDbClient ddb ) {
+		String tableName = "MG_MEMBER";
+		String key = "id";
+		String keyVal = "mg16";
+        HashMap<String,AttributeValue> keyToGet = new HashMap<String,AttributeValue>();
+
+        keyToGet.put(key, AttributeValue.builder()
+                .s(keyVal).build());
+
+        GetItemRequest request = GetItemRequest.builder()
+                .key(keyToGet)
+                .tableName(tableName)
+                .build();
+
+        try {
+            Map<String,AttributeValue> returnedItem = ddb.getItem(request).item();
+
+            if (returnedItem != null) {
+                Set<String> keys = returnedItem.keySet();
+                System.out.println("Amazon DynamoDB table attributes: \n");
+
+                for (String key1 : keys) {
+                    System.out.format("%s: %s\n", key1, returnedItem.get(key1).toString());
+                }
+            } else {
+                System.out.format("No item found with the key %s!\n", key);
+            }
+        } catch (DynamoDbException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+		
 	}
 
 

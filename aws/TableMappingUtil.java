@@ -1,6 +1,11 @@
 package com.amazonaws.lambda.demo.utils;
 
 import com.amazonaws.util.StringUtils;
+
+import software.amazon.awssdk.utils.CollectionUtils;
+
+import java.util.Map;
+
 import com.amazonaws.lambda.demo.table.ClientInfo2;
 import com.amazonaws.lambda.demo.table.MgClient;
 import com.amazonaws.lambda.demo.table.MgClientTableV2;
@@ -51,6 +56,19 @@ public class TableMappingUtil {
 			result2.setFullName(mgClient.getFull_name());
 		}
 
+		return result;
+	}
+	
+	public static MgClientTableV2 clientMapToMgClientTable(String id, Map<String, String> client_info) {
+		MgClientTableV2 result = new MgClientTableV2();
+		
+		if (!StringUtils.isNullOrEmpty(id)) {
+			result.setId(id);
+		}
+
+		if (!CollectionUtils.isNullOrEmpty(client_info)) {
+			result.setClient_info(client_info);
+		}
 		return result;
 	}
 }
