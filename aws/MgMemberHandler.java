@@ -65,25 +65,25 @@ public class MgMemberHandler implements RequestHandler<Object, String> {
     	//================MG_CLIENT / SDK V2===================================
 //    	clientService2.putClient(); //1건 등록
 //    	clientService2.putClients(enhancedClient); //복수 등록
-//    	clientService2.createClients(enhancedClient, event); //복수 등록 - json형식 / for문 
+    	clientService2.createClients(enhancedClient, event); //복수 등록 - json형식 / for문 
 //    	clientService2.deleteClient(ddb); //1건 삭제
-//    	clientService2.updateTableClientV2(ddb); //1건 업데이트
+//    	clientService2.getClient(ddb); //1건 조회
+//    	clientService2.deleteBatchClients(enhancedClient); //복수 삭제
+//    	clientService2.updateTableClientV(ddb); //1건 업데이트
 //    	clientService2.scanClient(enhancedClient); //scan
-    	clientService2.queryCliient(enhancedClient); //query
+//    	clientService2.queryCliient(enhancedClient); //query
     	
     	
     	//================MG_MEMBER / SDK V2===================================
 //    	serviceV2.putMember(enhancedClient); //dynamoDB sdk_v2 1건 등록.
 //    	serviceV2.deleteDymamoDBItem(ddb);//dynamoDB sdk_v2 1건 삭제.
-//    	serviceV2.updateTableItem(ddb);//dynamoDB sdk_v2 1건 업데이트.
-//    	
+//    	serviceV2.deleteMember(ddb);//dynamoDB sdk_v2 1건 삭제.
+//    	serviceV2.updateTableItem(ddb);//dynamoDB sdk_v2 1건 업데이트.	
 //    	serviceV2.createMembers(event); //dynamoDB sdk_v2 복수 등록. -- for문.
 //    	serviceV2.putBatchRecords(enhancedClient); //dynamoDB sdk_v2 복수 등록.
-//    	serviceV2.deleteBatchRecords(enhancedClient);//dynamoDB sdk_v2 복수 삭제.
-
+//    	serviceV2.deleteBatchMembers(enhancedClient);//dynamoDB sdk_v2 복수 삭제.
 //    	dbScanItems.scanItems(ddb); //dynamoDB sdk_v2 scan 데이터 취득.
 //    	dbScanItems.scan(enhancedClient); //dynamoDB sdk_v2 scan 데이터 취득.
-//    	
 //    	serviceV2.queryTable2(enhancedClient); //dynamoDB sdk_v2 query 데이터 취득.
 //    	serviceV2.queryTable(ddb) ; //dynamoDB sdk_v2 query 데이터 취득.	
 //    	//================END MG_MEMBER / SDK V2===================================
