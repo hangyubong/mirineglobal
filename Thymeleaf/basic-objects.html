@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<!-- 4. 기본 객체들
+		타임리프는 다음과같이 기본 객체들을 사용할 수 있게 제공해준다. 
+			${#reuqest}
+			${#response}
+			${#locale}
+			${#session}
+			${#servletContext}
+		기본객체에 대한 접근 편의 메서드
+		기본 객체들의 프로퍼티 접근을 하기위해서 편의 메서드가 없다면 request.getParameter("data") 
+		이런식으로 호출을 해야하지만, 타임리프에서는 이런 고생을 막기위해 편의 메서드를 제공한다. 
+			HTTP 요청 파라미터 접근: param 	⇒ Ex: ${param.paramData}
+			HTTP 세션 접근: session 		⇒ Ex: ${session.sessionData}
+			스프링 빈 접근: @ 				⇒ Ex: ${@helloBean.hello('Spring')}  
+	  -->	  
+<h1>식 기본 객체 (Expression Basic Objects)</h1>
+<ul>
+    <li>request = <span th:text="${#request}"></span></li>
+    <li>response = <span th:text="${#response}"></span></li>
+    <li>session = <span th:text="${#session}"></span></li>
+    <li>servletContext = <span th:text="${#servletContext}"></span></li>
+    <li>locale = <span th:text="${#locale}"></span></li>
+</ul>
+<h1>편의 객체</h1>
+<ul>
+    <li>Request Parameter = <span th:text="${param.paramData}"></span></li>
+    <li>session = <span th:text="${session.sessionData}"></span></li>
+    <li>spring bean = <span th:text="${@helloBean.hello('Spring!')}"></span></
+    li>
+</ul>
+</body>
+</html>

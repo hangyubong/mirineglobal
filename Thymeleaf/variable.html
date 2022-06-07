@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- 3. 변수 - SpringEL
+	타임리프에서 변수를 사용하는 변수 표현식을 몇가지 알아보자. 
+	기본적으로 변수 표현식은 ${...} 으로 사용하는데, 단순히 값을 표시하는 것인데, 이 변수 표현식에는 SpringEL이라는 스프링이 제공하는 표현식을 사용할 수 있다.  
+	SpringEL 표현식
+	단순한 변수라면 ${data}로 바로 표현이 가능하지만, Object나, List같은 객체는 다음과 같이 사용할 수 있다.
+	Object
+		data.field: data의 field 프로퍼티 접근 (data.getField())
+		data['field']: 위와 같다(data.getField())
+		data.getField(): data의 getField()메서드를 직접 호출 할 수 있다.
+	List
+		list[0].field: List의 첫 번째 데이터를 찾아 field 프로퍼티 접근한다. 
+		list[0]['field']: 위와 동일하다. 
+		list[0].getField(): List에서 첫 번째 회원을 찾아 메서드를 직접 호출 할 수 있다. 
+		list.get(0).xxx: List의 get메서드를 통해 데이터를 찾아 프로퍼티 접근도 가능하다. 
+	Map
+		map['key'].field: Map에서 key를 찾아 field 프로퍼티에 접근한다. 
+		⇒ map.get('key').getField()와 동일하다. 
+		map['key']['field']: 위와 동일하다.
+		map['key'].getField(): Map에서 key를 찾아 직접 메서드를 호출한다. 
+	-->
+	<h2>SpringEL 표현식</h>
+	<ul>Object
+	    <li>${user.username} = <span th:text="${user.username}"></span></li>
+	    <li>${user['username']} = <span th:text="${user['username']}"></span></li>
+	    <li>${user.getUsername()} = <span th:text="${user.getUsername()}"></span></li>
+	</ul>
+	<ul>List
+	    <li>${users[0].username} = <span th:text="${users[0].username}"></span></li>
+	    <li>${users[0]['username']} = <span th:text="${users[0]['username']}"></span></li>
+	    <li>${users[0].getUsername()}zz = <span th:text="${users[0].getUsername()}"></span></li>
+	</ul>
+	<ul>Map
+	    <li>${userMap['userA'].username} = <span th:text="${userMap['userA'].username}"></span></li>
+	    <li>${userMap['userA']['username']} = <span th:text="${userMap['userA']['username']}"></span></li>
+	    <li>${userMap['userA'].getUsername()} = <span th:text="${userMap['userA'].getUsername()}"></span></li>
+	</ul>
+	<div th:with="item=${users[0]}">
+	    <ul>
+	        <li>이름 : <span th:text="${item.username}"></span></li>
+	        <li>나이 : [[${item.age}]]</li>
+	    </ul>
+	</div>
+</body>
+</html>

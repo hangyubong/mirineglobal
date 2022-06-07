@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h2>컨텐츠 데이터 출력해보기</h2>
+	<!-- 2. 텍스트 - text, utext -->
+	<ul>
+	  <li>th:text 사용<span th:text="${data}"></span></li> <!--출력시: th:text 사용Hello <b>Spring<b>-->
+	  <li>컨텐츠 안에서 직접 출력하기 = [[${data}]]</li> <!--출력시: 컨텐츠 안에서 직접 출력하기 = Hello <b>Spring<b>-->
+	</ul>  
+	
+	<ul>
+	  <li>th:text 사용<span>Hello <b>Spring<b></span></li> <!--출력시: th:text 사용Hello Spring--> <!-- tag안에 있는 Spring만 진하게 출력됨-->
+	  <li>컨텐츠 안에서 직접 출력하기 = Hello <b>Spring<b></li> <!--출력시: 컨텐츠 안에서 직접 출력하기 = Hello Spring--> <!-- 컨텐츠...부터 전부 진하게 출력됨-->
+	</ul>  
+	
+	<!-- 타임리프가 제공하는 th:text, [[...]] 은 기본적으로 이스케이프(escape)를 제공하기 때문인데, 그 때문에 HTML에서 사용하는 특수 문자(ex: <, >)를 
+		 태그의 시작이 아닌 문자로 표현할 수 있도록 &lt;,b&gt; 이런식으로 변경되며 이를 HTML 엔티티라 한다. 그럼 어떻게 의도대로 사용하지? Unescape!
+		 그래서 다시 본론으로 돌아와서 내가 HTML 엔티티로 변경하지 않고 HTML 태그로 사용하고 싶다면 어떻게 해야할까? 
+		 다시 말해 escape되지않고 unescape하게 쓰고싶다면 어떻게 해야할까? -->
+	
+	<!-- 타임리프에서는 이를 위해 두 가지 기능을 제공한다 1. th:utext, 2. [(...)] -->	 
+	<h2>text vs utext</h2>
+	<ul>
+	  <li>th:text 사용<span th:text="${data}"></span></li> <!--출력시: th:text 사용Hello <b>Spring<b> -->
+	  <li>th:utext 사용<span th:utext="${data}"></span></li> <!--출력시: th:utext 사용Hello Spring -->
+	</ul>
+	
+	<!-- th:inline은 이 태그안에 있는 내용은 타임리프가 해석하지말라는 의미의 옵션인다.-->
+	<h2><span th:inline="none">[[...]] vs [(...)]</span><h2> <!--출력시: [[...]] vs [(...)] -->
+	<ul>
+	  <li><span th:inline="none">[[...]] = </span>[[${data}]] </li> <!--출력시: [[...]] = Hello <b>Spring<b> -->
+	  <li><span th:inline="none">[(...)] = </span>[(${data})] </li> <!--출력시: th:utext 사용Hello Spring -->
+	</ul>
+
+
+</body>
+</html>
